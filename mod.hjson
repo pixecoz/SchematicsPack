@@ -1,0 +1,6 @@
+name: "schematics V6"
+displayName: "[#ff5050]schematics V6"
+author: "[#ff5050]pixecoz"
+description: "[#ff5050]Schematics Pack."
+version: "6"
+minGameVersion: "126.1"
