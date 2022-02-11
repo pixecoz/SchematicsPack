@@ -1,4 +1,4 @@
 # Schematics Pack
 
 ## What is this?
-#### **Schematics Pack** is a mod that adds more schematics to your Mindustry.
+#### __Schematics Pack__ is a mod that adds more schematics to your Mindustry.
