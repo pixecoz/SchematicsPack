@@ -10,4 +10,4 @@
 - Units Schematics
 ```
 ## How can I share my schematics?
-#### using __[discord](https://discord.gg/P8zbP8xN8D)__ server, you can share schematics.
+#### using [__discord__](https://discord.gg/P8zbP8xN8D) server, you can share schematics.
