@@ -4,7 +4,7 @@
 # Download
 TODO
 ## What is this?
-#### **Schematics Pack** its a mod that adds more schematics to your Mindustry.
+#### Schematics Pack its a mod that adds more schematics to your Mindustry.
 ## What schematics does the mod add?
 ```
 • Resource Schematics
