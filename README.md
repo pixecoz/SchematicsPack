@@ -12,7 +12,9 @@ TODO
 • Units Schematics
 ```
 ## How can I share my schematics?
-#### using [discord](https://discord.gg/P8zbP8xN8D) server, you can share schematics.
+#### Using [discord](https://discord.gg/P8zbP8xN8D) server, you can share schematics.
+## Where can I ask my question?
+#### Using [discord](https://discord.gg/P8zbP8xN8D) server, you can ask your question.
 # Install
 ## Using Mindustry
 ### Import Github
@@ -21,4 +23,4 @@ TODO
 ##### Run Mindustry and go to the mods menu, click Mod Browser, enter in search `Schematics Pack`, click and install, done. Mod icon looks like this:
 ![icon](icon.png)
 ### Import using mod `.zip` file
-##### Run Mindustry and go to the mods menu, click import mod, import file, search `schematics-pack` mod file, click and install, done.
+##### Run Mindustry and go to the mods menu, click import mod, import file, search `schematics-pack` mod file, click and install, done. `.zip` file you can download in [releases](https://github.com/pixecoz/mindustrySchematics/releases)
