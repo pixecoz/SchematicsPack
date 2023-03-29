@@ -25,4 +25,5 @@ RUS:
 Special thanks to: Qwaka.",
 version: 9.0,
 minGameVersion: 136,
-hidden: true
+hidden: true,
+hideBrowser: true
