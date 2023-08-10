@@ -1,4 +1,5 @@
 const version = 1.0;
+var prevVersion = -1.0;
 const settingsKey = "scheme-pack-v";
 var shouldLoad = true;
 const alwaysLoad = false;
@@ -12,259 +13,151 @@ const startingSchematics = new Seq();
 const deletedSchematics = new Seq();
 const delSchemDir = Vars.dataDirectory.child("deleted_schematics");
 
-if (!delSchemDir.exists()) {
-    delSchemDir.mkdirs();
-}
+loadMod();
 
-// print("DATA_DIRECTORY=" + Vars.dataDirectory)
-
-
-
-function stileString(stile) {
-    return "Stile{" +
-        "block=" + stile.block +
-        ", x=" + stile.x +
-        ", y=" + stile.y +
-        ", config=" + stile.config +
-        ", config class=" + (stile.config == null ? "-" : stile.config.getClass().getSimpleName()) +
-        ", rotation=" + stile.rotation +
-        "}";
-}
-
-function configsEqual(conf1, conf2) {
-
-    if (conf1 == null && conf2 != null ||
-        conf1 != null && conf2 == null) return false;
-    if (conf1 == null && conf2 == null) return true;
-
-    if (conf1 == conf2) return true;
-
-    if (conf1.getClass() != conf2.getClass()) return false;
-
-    if (conf1 instanceof Packages.java.lang.String) return conf1.equals(conf2);
-
-    if (conf1 instanceof Content)
-        return conf1.id == conf2.id &&
-            conf1.getContentType().ordinal() == conf2.getContentType().ordinal();
-
-    if (conf1 instanceof IntSeq) {
-        if (conf1.size != conf2.size) return false
-        for (var i = 0; i < conf1.size; i++) {
-            if (conf1.items[i] != conf2.items[i]) return false;
-        }
-        return true;
+function loadMod() {
+    if (!delSchemDir.exists()) {
+        delSchemDir.mkdirs();
     }
 
-    if (conf1 instanceof Point2)
-        return conf1.x == conf2.x && conf1.y == conf2.y;
+    checkVersion();
 
-    if (conf1.getClass().getSimpleName().equals("Point2[]")) {
-        if (conf1.length != conf2.length) return false;
-        for (var i = 0; i < conf1.length; i++) {
-            if (conf1[i].x != conf2[i].x || conf1[i].y != conf2[i].y) return false;
-        }
-        return true
-    }
+    rainbowModname();
 
-    if (conf1 instanceof TechTree.TechNode)
-        return conf1.content.id == conf2.content.id &&
-            conf1.content.getContentType().ordinal() == conf2.content.getContentType().ordinal()
+    // overrideSchematics();
 
-    if (conf1 instanceof Building)
-        return conf1.pos() == conf2.pos();
+    
+    const loadedAmount = loadDeletedSchematics();
+    spprint("loaded " + loadedAmount + " deleted schematics");
+    
+    
+    Events.on(EventType.ClientLoadEvent, e => {
+        loadSchematicsIfNeeded();
+        startingSchematics.addAll(Vars.schematics.all());
+        setupUI();
+    });
 
-    if (conf1 instanceof LAccess)
-        return conf1.ordinal() == conf2.ordinal();
+    Events.on(SchematicCreateEvent, e => {
+        startingSchematics.add(e.schematic);
+    });
 
-    if (conf1.getClass().getSimpleName().equals("byte[]")) {
-        if (conf1.length != conf2.length) return false;
-        for (var i = 0; i < conf1.length; i++) {
-            if (conf1[i] != conf2[i]) return false;
-        }
-        return true
-    }
 
-    if (conf1 instanceof UnitCommand)
-        return conf1.ordinal() == conf2.ordinal();
-
-    if (conf1 instanceof BuildingBox)
-        return conf1.pos == conf2.pos;
-
-    return ((typeof conf1.equals !== "undefined") && conf1.equals(conf2)) ||
-        ((typeof conf2.equals !== "undefined") && conf2.equals(conf1));
-}
-
-function tilesEqual(schem1, schem2, sort) {
-
-    const tiles1 = schem1.tiles;
-    const tiles2 = schem2.tiles;
-    const len = tiles1.size;
-
-    if (len != schem2.tiles.size || schem1.width != schem2.width || schem1.height != schem2.height) return false;
-
-    if (sort) {
-        tiles1.sort(floatf(st => st.y * schem1.width + st.x));
-        tiles2.sort(floatf(st => st.y * schem2.width + st.x));
-    }
-
-    var t1 = null, t2 = null;
-    for (var i = 0; i < len; i++) {
-        t1 = tiles1.get(i), t2 = tiles2.get(i);
-
-        if (t1.block != t2.block || t1.x != t2.x || t1.y != t2.y ||
-            t1.rotation != t2.rotation || !configsEqual(t1.config, t2.config)) {
-
-            // print(stileString(t1) + " != " + stileString(t2));
-            return false
-
-        }
-    }
-    return true;
-}
-
-function loadSchematics() {
-    const mod = Vars.mods.getMod(_modname);
-    const file = mod.root.child(folder);
-    var total = 0;
-    var added = 0;
-    if (file.exists()) {
-
-        const list = file.list();
-        const all = Vars.schematics.all();
-
-        all.each(s => s.tiles.sort(floatf(st => st.y * s.width + st.x)))
-
-        for (var i in list) {
-
-            try {
-                const s = Vars.schematics.read(list[i]);
-                s.tiles.sort(floatf(st => st.y * s.width + st.x))
-                total++;
-
-                if (!all.contains(boolf(sch => tilesEqual(sch, s, false)))) {
-                    Vars.schematics.add(s);
-                    added++;
-                }
-
-            } catch (e) {
-                print("failed to copy schematic: " + e);
-            }
-
-        }
-    }
-    return [total, added];
-}
-
-function loadDeletedSchematics() {
-
-    const list = delSchemDir.list();
-    var count = 0;
-
-    for (var i in list) {
-        try {
-            const s = Vars.schematics.read(list[i]);
-            // s.file = list[i];
-            deletedSchematics.add(s);
-            count++;
-
-        } catch (e) {
-            print("failed to load deleted schematic: " + e);
-        }
-    }
-
-    return count;
-}
-
-function updateDeletedSchematics() {
-    startingSchematics.each(sch => {
-        // print("processed schematic '" + sch.name() + "'");
-        // print("all: " 
-
-        if (!Vars.schematics.all().contains(sch) && !deletedSchematics.contains(sch)) {
-            try {
-                const file = delSchemDir.child(Time.millis() + "." + Vars.schematicExtension);
-                Vars.schematics.write(sch, file);
-                sch.file = file;
-
-                deletedSchematics.add(sch);
-            } catch (e) {
-                print(e);
-            }
-        }
-
+    Events.on(DisposeEvent, e => {
+        updateDeletedSchematics();
     });
 }
 
-
-if (Core.settings.has(settingsKey)) {
-    shouldLoad = Core.settings.getFloat(settingsKey, -1.0) < version;
-    print("SCHEMATICS-PACK Settings contains settingsKey: '" + settingsKey + "'");
-    print("SCHEMATICS-PACK previous version:" + Core.settings.getFloat(settingsKey, -1.0) + ", current version:" + version);
-
-} else {
-    print("SCHEMATICS-PACK Settings do not contains settingsKey: '" + settingsKey + "'");
-    Core.settings.put(settingsKey, new java.lang.Float(version));
-    print("SCHEMATICS-PACK putted version:" + version);
+function checkVersion() {
+    if (Core.settings.has(settingsKey)) {
+        prevVersion = Core.settings.getFloat(settingsKey, -1.0);
+        shouldLoad = prevVersion < version;
+        spprint("Settings contains settingsKey: '" + settingsKey + "', previous version: " + prevVersion + ", current version: " + version);
+    } else {
+        spprint("Settings do not contains settingsKey: '" + settingsKey + "', put current version: " + version);
+        Core.settings.put(settingsKey, new Float(version));
+    }
 }
 
+function loadSchematicsIfNeeded() {
+    if (shouldLoad || alwaysLoad) {
+        var amount = loadSchematics();
+        spprint("Schematics loaded automatically");
+        spprint("total schematic files: " + amount.total + "   added schematics: " + amount.added);
+    }
+}
 
-if (shouldLoad || alwaysLoad) {
-    Events.on(ClientLoadEvent, e => {
-        var a = loadSchematics();
-        print("SCHEMATICS-PACK Schematics loaded automatically");
-        print("total schematics files: " + a[0] + "   added schematics: " + a[1]);
+function rainbowModname() {
+    Events.run(EventType.Trigger.update, () => {
+        let modName = "Schematics Pack";
+        let newName = "";
+        let hue = Time.time;
+        Tmp.c1.set(Color.blue);
+        for (let i in modName) {
+            Tmp.c1.hue(hue);
+            newName += "[#" + Tmp.c1 + "]" + modName[i] + "[]";
+            hue += 10;
+        }
+        Vars.mods.locateMod("schematics-pack").meta.displayName = newName;
     });
 }
 
-const loaded = loadDeletedSchematics();
-print("SCHEMATICS-PACK loaded " + loaded + " deleted schematics");
+function spprint() {
+    var text = "";
+    for (var i in arguments) {
+        text += String(arguments[i]) + " ";
+    }
+    log("schematics-pack", text);
+}
 
+function setupUI() {
+    setupStartingDialog();
+    setupInformationDialog();
+    setupDeletedSchematicsDialog();
+}
 
-Events.on(EventType.ClientLoadEvent, e => {
+function setupStartingDialog() {
+    var startingDialog = new BaseDialog("@scripts.schematics-pack.starting-dialog");
 
-    startingSchematics.addAll(Vars.schematics.all());
+    startingDialog.buttons.defaults().size(210, 64);
+    startingDialog.buttons.button("@ok", () => startingDialog.hide()).size(210, 64);
 
+    startingDialog.addCloseListener();
 
+    startingDialog.cont.table(cons(t => {
+        t.top();
+        const width = Core.graphics.getWidth() * Scl.scl(1) / 5;
+        t.image(Core.atlas.find(_modname + "-" + spriteName)).size(width > 480 ? 480 : width, (width > 480 ? 480 : width) / 2.76).growX();
+    })).row();
+
+    startingDialog.cont.pane(cons(t => {
+        t.labelWrap("@scripts.schematics-pack.starting-dialog-text").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
+    })).width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
+
+    startingDialog.show();
+}
+
+function setupInformationDialog() {
     Vars.ui.schematics.buttons.row();
-    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.information", Icon.info, () => {
 
+    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.information", Icon.info, () => {
         var information = new BaseDialog("@scripts.schematics-pack.information");
+
         const builder = run(() => {
             information.cont.clear();
             information.buttons.clear();
 
-            information.cont.table(cons(t=>{
-            	t.top();
-	            const width = Core.graphics.getWidth()*Scl.scl(1)/5;
-				t.image(Core.atlas.find(_modname + "-" + spriteName)).size(width > 480 ? 480 : width, (width > 480 ? 480 : width)/2.76).growX();
-			})).row();
+            information.cont.table(cons(t => {
+                t.top();
+                const width = Core.graphics.getWidth() * Scl.scl(1) / 5;
+                t.image(Core.atlas.find(_modname + "-" + spriteName)).size(width > 480 ? 480 : width, (width > 480 ? 480 : width) / 2.76).growX();
+            })).row();
             // information.cont.table(cons(t => t.labelWrap("@scripts.schematics-pack.mod-information").growX())).width(500).row();
-            information.cont.pane(cons(t=>{
-				t.labelWrap("@scripts.schematics-pack.mod-information").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
-			})).width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
+            information.cont.pane(cons(t => {
+                t.labelWrap("@scripts.schematics-pack.mod-information").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
+            })).width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
             //information.cont.labelWrap("@scripts.schematics-pack.mod-information").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
             information.addCloseButton();
-    
+
             information.buttons.button("@scripts.schematics-pack.discord", Icon.discord, () => {
                 if (!Core.app.openURI(discrodURL)) {
                     Vars.ui.showErrorMessage("@linkfail");
                 }
             });
-    
-            if(Core.graphics.isPortrait()) information.buttons.row();
-    
+
+            if (Core.graphics.isPortrait()) information.buttons.row();
+
             information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.schematics-confirm", () => {
-                var a = loadSchematics();
-                print("SCHEMATICS-PACK Schematics loaded by player");
-                print("total schematics files: " + a[0] + "   added schematics: " + a[1]);
+                var amount = loadSchematics();
+                spprint("Schematics loaded by player");
+                spprint("total schematics files: " + amount.total + "   added schematics: " + amount.added);
             }));
-    
+
             information.buttons.button("@scripts.schematics-pack.github-releases", Icon.github, () => {
                 if (!Core.app.openURI(githubURL)) {
                     Vars.ui.showErrorMessage("@linkfail");
                 }
             });
-    
+
             information.show();
         });
 
@@ -272,23 +165,22 @@ Events.on(EventType.ClientLoadEvent, e => {
         // information.show();
 
         Events.on(ResizeEvent, e => {
-            if(information.isShown() && Core.scene.getDialog() == information){
+            if (information.isShown() && Core.scene.getDialog() == information) {
                 builder.run();
                 information.updateScrollFocus();
             }
         });
-
-
     });
-    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.deleted-schematics", Icon.trash, () => {
+}
 
+function setupDeletedSchematicsDialog() {
+    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.deleted-schematics", Icon.trash, () => {
         updateDeletedSchematics()
 
         var deletedDialog = new BaseDialog("@scripts.schematics-pack.deleted-schematics-dialog");
         deletedDialog.addCloseButton();
 
         deletedDialog.buttons.button("@scripts.schematics-pack.delete-all", Icon.trash, run(() => Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-all-confirm", () => {
-
             deletedSchematics.each(s => {
                 s.file.delete();
                 startingSchematics.remove(s);
@@ -359,7 +251,7 @@ Events.on(EventType.ClientLoadEvent, e => {
                                 Vars.schematics.getBuffer(schem);
                                 t.add(new SchematicsDialog.SchematicImage(schem)).margin(1).size(140);
                             } catch (e) {
-                                print(e);
+                                spprint(e);
                                 t.image(Core.atlas.find("error"));
                             }
                         }));
@@ -367,7 +259,7 @@ Events.on(EventType.ClientLoadEvent, e => {
                     }), () => Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.schematics-restore-confirm", schem.name()), () => {
 
                         deletedSchematics.remove(schem);
-                        print("startingSchematics schem " + schem.name() + " " + startingSchematics.contains(schem))
+                        spprint("startingSchematics schem " + schem.name() + " " + startingSchematics.contains(schem))
                         if (!startingSchematics.contains(schem)) startingSchematics.add(schem);
                         schem.file.delete();
 
@@ -379,25 +271,287 @@ Events.on(EventType.ClientLoadEvent, e => {
                     // sel[0].image(new TextureRegion(Vars.schematics.getPreview(schem)));
 
                     if ((i + 1) % cols == 0) p.row();
-
                 }
             });
-
             rebuildPane[0].run();
 
         }).scrollX(false);
 
         deletedDialog.show();
+    });
+}
+
+function stileString(stile) {
+    return "Stile{" +
+        "block=" + stile.block +
+        ", x=" + stile.x +
+        ", y=" + stile.y +
+        ", config=" + stile.config +
+        ", config class=" + (stile.config == null ? "-" : stile.config.getClass().getSimpleName()) +
+        ", rotation=" + stile.rotation +
+        "}";
+}
+
+function configsEqual(conf1, conf2) {
+    if (conf1 == null && conf2 != null ||
+        conf1 != null && conf2 == null) return false;
+    if (conf1 == null && conf2 == null) return true;
+
+    if (conf1 == conf2) return true;
+
+    if (conf1.getClass() != conf2.getClass()) return false;
+
+    if (conf1 instanceof Packages.java.lang.String) return conf1.equals(conf2);
+
+    if (conf1 instanceof Content)
+        return conf1.id == conf2.id &&
+            conf1.getContentType().ordinal() == conf2.getContentType().ordinal();
+
+    if (conf1 instanceof IntSeq) {
+        if (conf1.size != conf2.size) return false
+        for (var i = 0; i < conf1.size; i++) {
+            if (conf1.items[i] != conf2.items[i]) return false;
+        }
+        return true;
+    }
+
+    if (conf1 instanceof Point2)
+        return conf1.x == conf2.x && conf1.y == conf2.y;
+
+    if (conf1.getClass().getSimpleName().equals("Point2[]")) {
+        if (conf1.length != conf2.length) return false;
+        for (var i = 0; i < conf1.length; i++) {
+            if (conf1[i].x != conf2[i].x || conf1[i].y != conf2[i].y) return false;
+        }
+        return true
+    }
+
+    if (conf1 instanceof TechTree.TechNode)
+        return conf1.content.id == conf2.content.id &&
+            conf1.content.getContentType().ordinal() == conf2.content.getContentType().ordinal()
+
+    if (conf1 instanceof Building)
+        return conf1.pos() == conf2.pos();
+
+    if (conf1 instanceof LAccess)
+        return conf1.ordinal() == conf2.ordinal();
+
+    if (conf1.getClass().getSimpleName().equals("byte[]")) {
+        if (conf1.length != conf2.length) return false;
+        for (var i = 0; i < conf1.length; i++) {
+            if (conf1[i] != conf2[i]) return false;
+        }
+        return true
+    }
+
+    if (conf1 instanceof UnitCommand)
+        return conf1.ordinal() == conf2.ordinal();
+
+
+    if (conf1 instanceof BuildingBox)
+        return conf1.pos == conf2.pos;
+
+    return ((typeof conf1.equals !== "undefined") && conf1.equals(conf2)) ||
+        ((typeof conf2.equals !== "undefined") && conf2.equals(conf1));
+}
+
+function tilesEqual(schem1, schem2, sort) {
+
+    const tiles1 = schem1.tiles;
+    const tiles2 = schem2.tiles;
+    const len = tiles1.size;
+
+    if (len != schem2.tiles.size || schem1.width != schem2.width || schem1.height != schem2.height) return false;
+
+    if (sort) {
+        tiles1.sort(floatf(st => st.y * schem1.width + st.x));
+        tiles2.sort(floatf(st => st.y * schem2.width + st.x));
+    }
+
+    var t1 = null, t2 = null;
+    for (var i = 0; i < len; i++) {
+        t1 = tiles1.get(i), t2 = tiles2.get(i);
+
+        if (t1.block != t2.block || t1.x != t2.x || t1.y != t2.y ||
+            t1.rotation != t2.rotation || !configsEqual(t1.config, t2.config)) {
+
+            // spprint(stileString(t1) + " != " + stileString(t2));
+            return false
+
+        }
+    }
+    return true;
+}
+
+function loadSchematics() {
+    const mod = Vars.mods.getMod(_modname);
+    const file = mod.root.child(folder);
+    var total = 0;
+    var added = 0;
+    if (file.exists()) {
+
+        const list = file.list();
+        const all = Vars.schematics.all();
+
+        all.each(s => s.tiles.sort(floatf(st => st.y * s.width + st.x)))
+
+        for (var i in list) {
+
+            try {
+                const s = Vars.schematics.read(list[i]);
+                s.tiles.sort(floatf(st => st.y * s.width + st.x))
+                total++;
+
+                if (!all.contains(boolf(sch => tilesEqual(sch, s, false)))) {
+                    Vars.schematics.add(s);
+                    added++;
+                }
+
+            } catch (e) {
+                spprint("failed to copy schematic: " + e);
+            }
+
+        }
+    }
+    return { total: total, added: added };
+}
+
+function loadDeletedSchematics() {
+
+    const list = delSchemDir.list();
+    var count = 0;
+
+    for (var i in list) {
+        try {
+            const s = Vars.schematics.read(list[i]);
+            // s.file = list[i];
+            deletedSchematics.add(s);
+            count++;
+
+        } catch (e) {
+            spprint("failed to load deleted schematic: " + e);
+        }
+    }
+
+    return count;
+}
+
+function updateDeletedSchematics() {
+    startingSchematics.each(sch => {
+        // spprint("processed schematic '" + sch.name() + "'");
+        // spprint("all: " 
+
+        if (!Vars.schematics.all().contains(sch) && !deletedSchematics.contains(sch)) {
+            try {
+                const file = delSchemDir.child(Time.millis() + "." + Vars.schematicExtension);
+                Vars.schematics.write(sch, file);
+                sch.file = file;
+
+                deletedSchematics.add(sch);
+            } catch (e) {
+                spprint(e);
+            }
+        }
 
     });
+}
 
-});
+function overrideSchematics() {
+    Events.on(EventType.ClientLoadEvent, e => {
+        spprint("SCHEMATICS WAS", Vars.schematics);
+        Vars.schematics = extend(Schematics, {
+            read: /*Schematic*/ function (/*InputStream*/ input) /* throws IOException */ {
+                for (let b of Schematics.header) {
+                    if (input.read() != b) {
+                        throw new java.io.IOException("Not a schematic file (missing header).");
+                    }
+                }
 
-Events.on(SchematicCreateEvent, e => {
-    startingSchematics.add(e.schematic);
-});
+                let /*int*/ ver = input.read();
+
+                let stream = new DataInputStream(new InflaterInputStream(input));
+                let mainThrowable = null;
+
+                try {
+                    // short width = stream.readShort(), height = stream.readShort();
+                    let width = stream.readShort(), height = stream.readShort();
+
+                    // if(width > 128 || height > 128) throw new IOException("Invalid schematic: Too large (max possible size is 128x128)");
+
+                    let map = new StringMap();
+                    // int tags = stream.readUnsignedByte();
+                    let tags = stream.readUnsignedByte();
+                    for (let i = 0; i < tags; i++) {
+                        map.put(stream.readUTF(), stream.readUTF());
+                    }
+
+                    // String[] labels = null;
+                    let labels = null;
+
+                    //try to read the categories, but skip if it fails
+                    try {
+                        labels = JsonIO.read(Class.forName("java.lang.String").arrayType().class, map.get("labels", "[]"));
+                    } catch (/*Exception*/ ignored) {
+                    }
+
+                    // IntMap<Block> blocks = new IntMap<>();
+                    let blocks = new IntMap();
+                    // byte length = stream.readByte();
+                    let length = stream.readByte();
+                    for (let i = 0; i < length; i++) {
+                        // String name = stream.readUTF();
+                        let name = stream.readUTF();
+                        // Block block = Vars.content.getByName(ContentType.block, SaveFileReader.fallback.get(name, name));
+                        let block = Vars.content.getByName(ContentType.block, SaveFileReader.fallback.get(name, name));
+                        // blocks.put(i, block == null || block instanceof LegacyBlock ? Blocks.air : block);
+                        blocks.put(i, block == null || block instanceof LegacyBlock ? Blocks.air : block);
+                    }
+
+                    // int total = stream.readInt();
+                    let total = stream.readInt();
+
+                    // if(total > 128 * 128) throw new IOException("Invalid schematic: Too many blocks.");
+
+                    // Seq<Stile> tiles = new Seq<>(total);
+                    let tiles = new Seq(total);
+                    for (let i = 0; i < total; i++) {
+                        // Block block = blocks.get(stream.readByte());
+                        let block = blocks.get(stream.readByte());
+                        // int position = stream.readInt();
+                        let position = stream.readInt();
+                        // Object config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream));
+                        let config = ver == 0 ? mapConfig(block, stream.readInt(), position) : TypeIO.readObject(Reads.get(stream));
+                        // byte rotation = stream.readByte();
+                        let rotation = stream.readByte();
+                        if (block != Blocks.air) {
+                            tiles.add(new Stile(block, Point2.x(position), Point2.y(position), config, rotation));
+                        }
+                    }
+
+                    // Schematic out = new Schematic(tiles, map, width, height);
+                    let out = new Schematic(tiles, map, width, height);
+                    if (labels != null) out.labels.addAll(labels);
+                    return out;
+
+                } catch (/*Throwable*/ t) {
+                    mainThrowable = t;
+                    throw t;
+                } finally {
+                    if (mainThrowable == null) {
+                        stream.close();
+                    } else {
+                        try {
+                            stream.close();
+                        } catch (/*Throwable*/ t) {
+                            mainThrowable.addSuppressed(t)
+                        }
+                    }
+                }
 
 
-Events.on(DisposeEvent, e => {
-    updateDeletedSchematics();
-});
+            }
+        });
+        spprint("SCHEMATICS BECOME", Vars.schematics);
+
+    });
+}
