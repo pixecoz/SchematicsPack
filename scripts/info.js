@@ -1,7 +1,9 @@
-const version = 1.0;
+const version = 1.0625;
 var prevVersion = -1.0;
+var versionUpgraded
 const settingsKey = "scheme-pack-v";
-var shouldLoad = true;
+// var allowPutNewVersion = true;
+var versionUpgraded = true;
 const alwaysLoad = false;
 const _modname = "schematics-pack";
 const folder = "msch";
@@ -25,7 +27,6 @@ function loadMod() {
     rainbowModname();
 
     // overrideSchematics();
-
     
     const loadedAmount = loadDeletedSchematics();
     spprint("loaded " + loadedAmount + " deleted schematics");
@@ -44,14 +45,20 @@ function loadMod() {
 
     Events.on(DisposeEvent, e => {
         updateDeletedSchematics();
+        // spprint("on dispose allowPutNewVersion =", allowPutNewVersion, " putting version: ", version)
+        // if (allowPutNewVersion) {
+        //     Core.settings.put(settingsKey, new Float(version));
+        // }
     });
+
+    
 }
 
 function checkVersion() {
     if (Core.settings.has(settingsKey)) {
         prevVersion = Core.settings.getFloat(settingsKey, -1.0);
-        shouldLoad = prevVersion < version;
-        spprint("Settings contains settingsKey: '" + settingsKey + "', previous version: " + prevVersion + ", current version: " + version);
+        versionUpgraded = prevVersion < version;
+        spprint("Settings contains settingsKey: '" + settingsKey + "', previous version: " + prevVersion + ", current version: " + version + ", version upgraded: " + versionUpgraded);
     } else {
         spprint("Settings do not contains settingsKey: '" + settingsKey + "', put current version: " + version);
         Core.settings.put(settingsKey, new Float(version));
@@ -59,7 +66,7 @@ function checkVersion() {
 }
 
 function loadSchematicsIfNeeded() {
-    if (shouldLoad || alwaysLoad) {
+    if (versionUpgraded || alwaysLoad) {
         var amount = loadSchematics();
         spprint("Schematics loaded automatically");
         spprint("total schematic files: " + amount.total + "   added schematics: " + amount.added);
@@ -90,7 +97,9 @@ function spprint() {
 }
 
 function setupUI() {
-    setupStartingDialog();
+    if (versionUpgraded) {
+        setupStartingDialog();
+    }
     setupInformationDialog();
     setupDeletedSchematicsDialog();
 }
@@ -99,7 +108,12 @@ function setupStartingDialog() {
     var startingDialog = new BaseDialog("@scripts.schematics-pack.starting-dialog");
 
     startingDialog.buttons.defaults().size(210, 64);
-    startingDialog.buttons.button("@ok", () => startingDialog.hide()).size(210, 64);
+    startingDialog.buttons.button("@ok", () => {
+        startingDialog.hide();
+        deleteOldSchematics();
+        Core.settings.put(settingsKey, new Float(version));
+        // allowPutNewVersion = true;
+    }).size(210, 64);
 
     startingDialog.addCloseListener();
 
@@ -554,4 +568,24 @@ function overrideSchematics() {
         spprint("SCHEMATICS BECOME", Vars.schematics);
 
     });
+}
+
+function deleteOldSchematics() {
+    const all = Vars.schematics.all();
+    const toRemove = new Seq();
+    for (let i = 0; i < all.size; i++) {
+        let s = all.get(i);
+        if (s.name().includes("[#ffa77a99]")) {
+            toRemove.add(s);
+        }
+    }
+    
+    for (let i = 0; i < toRemove.size; i++) {
+        let s = toRemove.get(i);
+        spprint("delete old mod schematic: [" + s.name() + "] [" + s.description() + "]");
+        startingSchematics.remove(s);
+        Vars.schematics.remove(s);
+    }
+
+    spprint("deleted total", toRemove.size, "old mod schematics")
 }
