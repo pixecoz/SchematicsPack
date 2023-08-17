@@ -22,13 +22,14 @@
  ``` 
  # Install 
  ## Using Mindustry 
- ### Import Github 
- ##### Run Mindustry and go to the mods menu, click import mod, import Github, enter `pixecoz/SchematicsPack`, done. 
- ### Import Github using Mod Browser 
+ ### Import GitHub
+ ##### Run Mindustry and go to the mods menu, click import mod, import GitHub, enter `pixecoz/SchematicsPack`, done. 
+ ### Import GitHub using Mod Browser 
  ##### Run Mindustry and go to the mods menu, click Mod Browser, enter in search `Schematics Pack`, click and install, done. _Mod icon looks like this:_ 
  ![icon](icon.png) 
  ### Import using mod `.zip` file 
  ##### Run Mindustry and go to the mods menu, click import mod, import file, search `schematics-pack` mod file, click and install, done. `.zip` file you can download in [_releases_](https://github.com/pixecoz/SchematicsPack/releases) 
  ### Put Schematics directly to your game save. 
- ##### unzip `schematics.zip` to `schematics` game save folder. `schematics.zip` you can download from [_releases_](https://github.com/pixecoz/SchematicsPack/releases).  
+ ##### unzip `schematics.zip` to `schematics` game save folder. `schematics.zip` you can download from [_releases_](https://github.com/pixecoz/SchematicsPack/releases).
+
  _Try to play without schematics!_
