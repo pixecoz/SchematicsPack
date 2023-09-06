@@ -2,7 +2,7 @@
   
  [![Discord](https://img.shields.io/discord/861700215227678730.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/P8zbP8xN8D) 
 # Download
-[build 145.1 | 10.0](https://github.com/pixecoz/SchematicsPack/releases/download/10.0/schematics-pack.zip), [build 135 | 9.0](https://github.com/pixecoz/SchematicsPack/releases/download/9.0/schematics-pack.zip), [build 135 | 9.0 classic](https://github.com/pixecoz/SchematicsPack/releases/download/9.0/schematics-pack-classic.zip)
+[build 146 | 10.0](https://github.com/pixecoz/SchematicsPack/releases/download/10.0/schematics-pack.zip), [build 135 | 9.0](https://github.com/pixecoz/SchematicsPack/releases/download/9.0/schematics-pack.zip), [build 135 | 9.0 classic](https://github.com/pixecoz/SchematicsPack/releases/download/9.0/schematics-pack-classic.zip)
 ## What is this?
 #### Schematics Pack its a mod that adds more schematics to your Mindustry.
 ## What schematics does the mod add?
