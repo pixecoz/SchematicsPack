@@ -27,7 +27,7 @@ function loadMod() {
         delSchemDir.mkdirs();
     }
 
-    checkVersion();
+    checkInstalledVersion();
 
     rainbowModname();
 
@@ -59,7 +59,7 @@ function loadMod() {
     
 }
 
-function checkVersion() {
+function checkInstalledVersion() {
     if (Core.settings.has(settingsKey)) {
         prevVersion = Core.settings.getFloat(settingsKey, -1.0);
         versionUpgraded = prevVersion < version;
