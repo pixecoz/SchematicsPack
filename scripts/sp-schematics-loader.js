@@ -83,47 +83,26 @@ const githubSchematicsLoader = {
     init: function() {
         const urlPrefix = "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev";
         const schematicJsonPath = "/msch/sch.json";
+        this.planets = [];
+        this.planetCategories = {};
+        this.planetSchematicsByCategory = {};
+
         Http.get(urlPrefix + schematicJsonPath, (res) => {
-            const stringRes = res.getResultAsString();
-            spprint("string result:", stringRes);
-            const schematicsJson = JSON.parse(stringRes);
-            spprint("json: ", schematicsJson);
-            spprint("json[0]: ", schematicsJson[0]);
-
-            this.planets = [];
-            this.planetCategories = {};
-            this.planetSchematicsByCategory = {};
-            const mod = Vars.mods.locateMod("schematics-pack");
-
-            for (let i = 0; i < schematicsJson.length; i++) {
-                if (schematicsJson[i].type !== "planet") {
-                    spprint("skip unknown type in json:", schematicsJson[i].type);
-                    continue;
-                }
-
-                const planetName = schematicsJson[i].name;
-                this.planets.push(new PlanetLike(planetName));
-                this.planetCategories[planetName] = Object.keys(schematicsJson[i].categories);
-
-                this.planetSchematicsByCategory[planetName] = {};
-                for (let j in this.planetCategories[planetName]) {
-                    const categoryName = this.planetCategories[planetName][j];
-                    const schematics = [];
-                    const schematicsBase64 = schematicsJson[i].categories[categoryName];
-                    for (let base64 of schematicsBase64) {
-                        try {
-                            schematics.push(Schematics.readBase64(base64));
-                            spprint("load:", base64, "for:", planetName, categoryName);
-                        } catch (e) {
-                            spprint("Unable read schematic from:", base64.substring(0, 10) + "...", "error:", e);
-                        }
-                    }
-                    this.planetSchematicsByCategory[planetName][categoryName] = schematics;
-                }
+            const stringRes = res.getResultAsString().trim();
+            if (stringRes == "") {
+                spprint("fetched json is empty", res.getStatus(), res);
+                return;
             }
+            const schematicsJson = JSON.parse(stringRes);
+            const parseResult = parseSchematicsJson(schematicsJson);
+            this.planets = parseResult.planets;
+            this.planetCategories = parseResult.planetCategories;
+            this.planetSchematicsByCategory = parseResult.planetSchematicsByCategory;
+
+            spprint("fetch json with", this.planets.length, "planets");
         });
     },
-    getPlanets: function() {  
+    getPlanets: function() {
         return this.planets;
     },
     getCategories: function(planetName) {
@@ -141,6 +120,43 @@ githubSchematicsLoader.__proto__ = baseSchematicsLoader;  // tru inheritance
 githubSchematicsLoader.init();
 
 
+
+function parseSchematicsJson(schematicsJson) {
+    const result = {
+        planets: [],
+        planetCategories: {},
+        planetSchematicsByCategory: {},
+    };
+   
+    for (let i = 0; i < schematicsJson.length; i++) {
+        if (schematicsJson[i].type !== "planet") {
+            spprint("skip unknown type in json:", schematicsJson[i].type);
+            continue;
+        }
+
+        const planetName = schematicsJson[i].name;
+        result.planets.push(new PlanetLike(planetName));
+        result.planetCategories[planetName] = Object.keys(schematicsJson[i].categories);
+
+        result.planetSchematicsByCategory[planetName] = {};
+        for (let j in result.planetCategories[planetName]) {
+            const categoryName = result.planetCategories[planetName][j];
+            const schematics = [];
+            const schematicsBase64 = schematicsJson[i].categories[categoryName];
+            for (let base64 of schematicsBase64) {
+                try {
+                    schematics.push(Schematics.readBase64(base64));
+                    // spprint("load:", base64, "for:", planetName, categoryName);
+                } catch (e) {
+                    spprint("Unable read schematic from:", base64.substring(0, 10) + "...", "error:", e);
+                }
+            }
+            result.planetSchematicsByCategory[planetName][categoryName] = schematics;
+        }
+    }
+
+    return result;
+}
 
 
 module.exports = {
