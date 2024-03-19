@@ -1,11 +1,11 @@
 name: "schematics-pack",
 displayName: "Schematics Pack",
-subtitle: "[red]core mod",
+subtitle: "The best way out is always through",
 author: "[#7a83ff[]]pixecoz[[]], [pink[]]Qwaka[[]]",
-description: "[#cc3300[]]⚠ WARN: WHEN YOU INSTALL THIS MOD, ALL MOD SCHEMATICS WILL BE LOADED TO YOUR GAME SAVE. ⚠[[]]
-This means that even after removing the mod, the schematics will not be deleted. You have been warned! Also you can install the classic pack as before on GitHub releases.
+description: "[#f15454[]]⚠ WARN: ONCE YOU INSTALL, ALL MOD SCHEMATICS WILL BE LOADED TO YOUR GAME SAVE. ⚠[[]]
+Even after removing the mod, the schematics will not be deleted. You have been warned!
 
-[#00cc00[]] Mod adds: [[]]
+[#84f491[]]Mod adds:[[]]
 - High quality schematics
 - 3 new maps for schematics
 - Restore schematics function
@@ -13,5 +13,5 @@ Contains schematics for resources, energy, units and more.
 
 Special thanks to: [teal[]]Alex[[]][pink[]]CnC[[]][red[]]1095[[]], [teal[]]xMrKamil[[]], [orange[]]<[[]]Laim_Ik™[orange[]]>[[]], Goozman_, KirillRum, [gold[]]|[[]][gold[]]Fox1va[[]][gold[]]|[[]], [#f00[]]ilya[#333[]]034[[]]",
 version: 10.0,
-minGameVersion: 145.1,
+minGameVersion: 146,
 hidden: true
