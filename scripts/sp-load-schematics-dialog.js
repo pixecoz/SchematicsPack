@@ -31,15 +31,6 @@ function setupPane(table, schematicsLoader) {
             buildPlanetButtons(p, planets[i].name, schematicsLoader);
             p.row();
         }
-        // buildPlanetButtons(p, "erekir");
-
-        // icon.tint(Color.valueOf("ff9266"));
-        // p.button("@planet.erekir.name", icon, () => {
-
-        // }).size(210, 64);
-        // p.button(Icon.download, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@jopa");
-        // p.button(Icon.trash, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@jopa");
-
     });
 }
 
@@ -110,11 +101,10 @@ function buildSchematicButton(table, schematic) {
             })).growX().margin(1).pad(4).maxWidth(Scl.scl(200 - 8)).padBottom(0);
         }))).size(200);
     }), Styles.flati, run(() => {
-        if (bub.childrenPressed() || !Vars.state.isMenu()) return;
-
+        if (bub.childrenPressed()) return;
+        
         const schematicInfo = createSchematicInfoDialog(schematic);
         schematicInfo.show();
-
     })).pad(4).get();
 
     bub.getStyle().up = Tex.pane;

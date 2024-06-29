@@ -29,7 +29,7 @@ function loadMod() {
 
     checkInstalledVersion();
 
-    rainbowModname();
+    // rainbowModname();
 
     // overrideSchematics();
     

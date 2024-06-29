@@ -24,6 +24,7 @@ function stileString(stile) {
         "}";
 }
 
+// TODO: complete because in new versions of mindustry new kinds of config appeared 
 function configsEqual(conf1, conf2) {
     if (conf1 == null && conf2 != null ||
         conf1 != null && conf2 == null) return false;
