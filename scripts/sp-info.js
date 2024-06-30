@@ -19,6 +19,9 @@ const utils = require("sp-utils");
 const spprint = utils.spprint;
 
 const loadSchematicsDialog = require("sp-load-schematics-dialog");
+const serializer = require("sp-serializer");
+
+const dev = true;
 
 loadMod();
 
@@ -175,6 +178,24 @@ function setupInformationDialog() {
                     Vars.ui.showErrorMessage("@linkfail");
                 }
             });
+
+            if (dev) {
+                information.buttons.button("сделать json", () => {
+                    try {
+                        const resultJsonName = "dev_schematics.json";
+                        const dirToSerializeName = "dev_schematics";
+
+                        const resultJson = serializer.serializeDirectory(dirToSerializeName);
+                        const resultFile = new Fi(resultJsonName);
+                        resultFile.writeString(JSON.stringify(resultJson, null, 4));
+                        
+                        Vars.ui.showInfo("Success");
+                    } catch (e) {
+                        Vars.ui.showInfo("Error");
+                        spprint("error to make json with schematics: " + e);
+                    }
+                });
+            }
 
             information.show();
         });
