@@ -7,12 +7,7 @@ const infoDialog = require("sp-information-dialog");
 const startDialog = require("sp-starting-dialog");
 
 const deletedSchematics = require("sp-deleted-schematics-dialog");
-const loadDeletedSchematics = deletedSchematics.loadDeletedSchematics;
-const updateDeletedSchematics = deletedSchematics.updateDeletedSchematics;
 const setupDeletedSchematicsDialog = deletedSchematics.setupDeletedSchematicsDialog;
-
-const rememberSchematics = globals.rememberSchematics;
-const delSchemDir = globals.delSchemDir;
 
 
 // version to determine if mod was updated, not related to version in mod.hjson
@@ -20,33 +15,18 @@ const version = 1.0625;
 let prevVersion = -1.0;
 let versionUpgraded = true;
 let firstRunOfVersion1x = true;
-// [#ffa77a99]
 
 
 initMod();
 
 function initMod() {
-    if (!delSchemDir.exists()) {
-        delSchemDir.mkdirs();
-    }
-
     checkInstalledVersion();
 
-    const loadedAmount = loadDeletedSchematics();
-    spprint("loaded " + loadedAmount + " deleted schematics");
-    
     Events.on(EventType.ClientLoadEvent, e => {
-        rememberSchematics.addAll(Vars.schematics.all());
         setupUI();
     });
 
-    Events.on(SchematicCreateEvent, e => {
-        rememberSchematics.add(e.schematic);
-    });
-
-    Events.on(DisposeEvent, () => {
-        updateDeletedSchematics();
-    });
+    deletedSchematics.init();
 }
 
 function checkInstalledVersion() {

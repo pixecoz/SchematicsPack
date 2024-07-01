@@ -1,4 +1,5 @@
 module.exports = {
+    init: init,
     setupDeletedSchematicsDialog: setupDeletedSchematicsDialog,
     loadDeletedSchematics: loadDeletedSchematics,
     updateDeletedSchematics: updateDeletedSchematics,
@@ -11,6 +12,28 @@ const globals = require("sp-globals");
 const rememberSchematics = globals.rememberSchematics;
 const deletedSchematics = globals.deletedSchematics;
 const delSchemDir = globals.delSchemDir;
+
+
+function init() {
+    if (!delSchemDir.exists()) {
+        delSchemDir.mkdirs();
+    }
+    
+    const loadedAmount = loadDeletedSchematics();
+    spprint("loaded " + loadedAmount + " deleted schematics");
+    
+    Events.on(EventType.ClientLoadEvent, e => {
+        rememberSchematics.addAll(Vars.schematics.all());
+    });
+
+    Events.on(SchematicCreateEvent, e => {
+        rememberSchematics.add(e.schematic);
+    });
+
+    Events.on(DisposeEvent, () => {
+        updateDeletedSchematics();
+    });
+}
 
 function setupDeletedSchematicsDialog() {
     Vars.ui.schematics.buttons.button("@scripts.schematics-pack.deleted-schematics", Icon.trash, () => {

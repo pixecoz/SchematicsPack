@@ -2,6 +2,8 @@ module.exports = {
     setupStartingDialog: setupStartingDialog,
 }
 
+const constants = require("sp-constants");
+
 
 function setupStartingDialog() {
     var startingDialog = new BaseDialog("@scripts.schematics-pack.starting-dialog");
@@ -10,7 +12,7 @@ function setupStartingDialog() {
     startingDialog.buttons.button("@ok", () => {
         startingDialog.hide();
         
-        // deleteOldSchematics();
+        deleteOldSchematics();
     }).size(210, 64);
 
     startingDialog.addCloseListener();
