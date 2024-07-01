@@ -20,7 +20,7 @@ function setupDialog(schematicsLoader) {
     setupPane(planetsAndAddonsSchematicsDialog.cont, schematicsLoader);
 
     planetsAndAddonsSchematicsDialog.addCloseButton();
-    planetsAndAddonsSchematicsDialog.buttons.button("@scripts.schematics-pack.download-all", Icon.download, () => {/* confirm dialog */ });
+    planetsAndAddonsSchematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
 }
 
 function setupPane(table, schematicsLoader) {
@@ -66,7 +66,7 @@ function createCategoriesDialog(planetName, schematicsLoader) {
     }
 
     categoriesDialog.addCloseButton();
-    categoriesDialog.buttons.button("@scripts.schematics-pack.download-all", Icon.download, () => {/* confirm dialog */ });
+    categoriesDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
     
     return categoriesDialog;
 }
@@ -83,7 +83,7 @@ function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
     }
 
     schematicsDialog.addCloseButton();
-    schematicsDialog.buttons.button("@scripts.schematics-pack.download-all", Icon.download, () => {/* confirm dialog */ });
+    schematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
     
     return schematicsDialog;
 }
@@ -164,7 +164,7 @@ function createSchematicInfoDialog(schematic) {
     info.buttons.defaults().size(Core.graphics.isPortrait() ? 150 : 210, 64);
     info.buttons.button("@back", Icon.left, () => info.hide());
     info.buttons.button("@editor.export", Icon.upload, () => Vars.ui.schematics.showExport(schematic));
-    info.buttons.button("@scripts.schematics-pack.download-all", Icon.download, () => { });  // TODO не all может?
+    info.buttons.button("@scripts.schematics-pack.download", Icon.download, () => { });  // TODO не all может?
     // info.addCloseButton();
 
     return info;
