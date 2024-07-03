@@ -3,7 +3,8 @@ module.exports = {
 }
 
 const constants = require("sp-constants");
-
+const utils = require("sp-utils");
+const spprint = utils.spprint;
 
 function setupStartingDialog() {
     var startingDialog = new BaseDialog("@scripts.schematics-pack.starting-dialog");

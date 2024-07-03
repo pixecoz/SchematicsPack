@@ -6,4 +6,7 @@ module.exports = {
     logoSpriteName: "schematics-pack",
     developer: true,
     deletedSchematicsDirName: "deleted_schematics",
+    
+    serializedJsonName: "dev_schematics.json",
+    dirToSerializeName: "dev_schematics",
 }

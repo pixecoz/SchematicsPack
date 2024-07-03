@@ -26,6 +26,8 @@ function initMod() {
         setupUI();
     });
 
+    // TODO: put new version on dispose
+
     deletedSchematics.init();
 }
 

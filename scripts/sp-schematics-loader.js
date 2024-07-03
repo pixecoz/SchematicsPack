@@ -160,7 +160,6 @@ function parseSchematicsJson(schematicsJson) {
 
 
 module.exports = {
-    baseSchematicsLoader: baseSchematicsLoader,
     fileSchematicsLoader: fileSchematicsLoader,
     githubSchematicsLoader: githubSchematicsLoader,
 }

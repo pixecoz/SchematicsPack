@@ -52,11 +52,8 @@ function setupInformationDialog() {
             if (constants.developer) {
                 information.buttons.button("сделать json", () => {
                     try {
-                        const resultJsonName = "dev_schematics.json";
-                        const dirToSerializeName = "dev_schematics";
-
-                        const resultJson = serializer.serializeDirectory(dirToSerializeName);
-                        const resultFile = new Fi(resultJsonName);
+                        const resultJson = serializer.serializeDirectory(constants.dirToSerializeName);
+                        const resultFile = new Fi(constants.serializedJsonName);
                         resultFile.writeString(JSON.stringify(resultJson, null, 4));
                         
                         Vars.ui.showInfoFade("Success", 2);

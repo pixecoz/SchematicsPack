@@ -3,6 +3,12 @@ module.exports = {
     stileString: stileString,
     configsEqual: configsEqual,
     tilesEqual: tilesEqual,
+
+    getSchematicsOfCategories: getSchematicsOfCategories,
+    getSchematicsOfPlanets: getSchematicsOfPlanets,
+    getAllSchematics: getAllSchematics,
+    addSchematicsToSave: addSchematicsToSave,
+    removeSchematicsFromSave: removeSchematicsFromSave,
 }
 
 function spprint() {
@@ -89,12 +95,19 @@ function configsEqual(conf1, conf2) {
 }
 
 function tilesEqual(schem1, schem2, sort) {
-
     const tiles1 = schem1.tiles;
     const tiles2 = schem2.tiles;
     const len = tiles1.size;
 
-    if (len != schem2.tiles.size || schem1.width != schem2.width || schem1.height != schem2.height) return false;
+    // spprint("name1="+schem1.name(), "name2="+schem2.name(),
+    //     "len="+len,
+    //     "tiles2.size="+tiles2.size,
+    //     "schem1.width="+schem1.width,
+    //     "schem2.width="+schem2.width,
+    //     "schem1.height="+schem1.height,
+    //     "schem2.height="+schem2.height,
+    // );
+    if (len != tiles2.size || schem1.width != schem2.width || schem1.height != schem2.height) return false;
 
     if (sort) {
         tiles1.sort(floatf(st => st.y * schem1.width + st.x));
@@ -108,7 +121,7 @@ function tilesEqual(schem1, schem2, sort) {
         if (t1.block != t2.block || t1.x != t2.x || t1.y != t2.y ||
             t1.rotation != t2.rotation || !configsEqual(t1.config, t2.config)) {
 
-            // spprint(stileString(t1) + " != " + stileString(t2));
+            // spprint(schem1.name() +"!=" + schem2.name(), stileString(t1) + " != " + stileString(t2));
             return false
 
         }
@@ -116,3 +129,61 @@ function tilesEqual(schem1, schem2, sort) {
     return true;
 }
 
+
+function getSchematicsOfCategories(schematicLoader, planet /* PlanetLike[] */, categories /* string[] */) {
+    let result = [];
+    for (let cat of categories) {
+        result = result.concat(schematicLoader.getSchematics(planet /* PlanetLike[] */, categories));
+    }
+    return result;
+}
+
+function getSchematicsOfPlanets(schematicLoader, planets) {
+    let result = [];
+    for (let p of planets) {
+        const cats = schematicLoader.getCategories(p);
+        result = result.concat(getSchematicsOfCategories(schematicLoader, p, cats));
+    }
+    return result;
+}
+
+function getAllSchematics(schematicLoader) {
+    return getSchematicsOfPlanets(schematicLoader, schematicLoader.getPlanets());
+}
+
+function addSchematicsToSave(schematics /* Schematic[] */) {
+    const all = Vars.schematics.all();		
+    all.each(cons(s => s.tiles.sort(floatf(st => st.y * s.width + st.x))));
+
+    for (let s of schematics) {
+        s.tiles.sort(floatf(st => st.y * s.width + st.x));
+        const bol = !all.contains(boolf(sch => {
+            const res = tilesEqual(sch, s, false);
+            return res;
+        }));
+        if (bol) {
+            Vars.schematics.add(s);
+        }
+    }
+}
+
+function removeSchematicsFromSave(schematics /* Schematic[] */) {
+    const all = Vars.schematics.all();		
+    all.each(cons(s => s.tiles.sort(floatf(st => st.y * s.width + st.x))));
+
+    for (let s of schematics) {
+        s.tiles.sort(floatf(st => st.y * s.width + st.x));
+    }
+
+    const toRemove = all.select(boolf(sch => {
+        for (let s of schematics) {
+            if (tilesEqual(sch, s, false)) return true; 
+        }
+        return false;
+    }));
+
+    for (let i = 0; i < toRemove.size; i++) {
+        const s = toRemove.get(i);
+        Vars.schematics.remove(s);
+    }
+}

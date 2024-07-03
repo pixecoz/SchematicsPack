@@ -4,8 +4,9 @@ module.exports = {
 }
 
 const utils = require("sp-utils");
-const schematicsLoaders = require("sp-schematics-loader");
 const spprint = utils.spprint;
+
+const schematicsLoaders = require("sp-schematics-loader");
 
 
 Events.on(EventType.ClientLoadEvent, e => {
@@ -19,13 +20,19 @@ function setupDialog(schematicsLoader) {
 
     setupPane(planetsAndAddonsSchematicsDialog.cont, schematicsLoader);
 
+    const confirm = () => {
+        spprint("confirm 24");
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-all", () => {
+            spprint("Vars.ui.showConfirm 24")
+            utils.addSchematicsToSave(utils.getAllSchematics(schematicsLoader));
+        });
+    }
     planetsAndAddonsSchematicsDialog.addCloseButton();
-    planetsAndAddonsSchematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
+    planetsAndAddonsSchematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, confirm);
 }
 
 function setupPane(table, schematicsLoader) {
     module.exports.scrollPane = table.pane(p => {
-       
         const planets = schematicsLoader.getPlanets();
         for (let i = 0; i < planets.length; i++) {
             buildPlanetButtons(p, planets[i].name, schematicsLoader);
@@ -45,8 +52,22 @@ function buildPlanetButtons(table, planetName, schematicsLoader) {
         categoriesDialog.show();
     }).size(210, 64).pad(5);
 
-    table.button(Icon.download, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.download-planet-schematics-tooltip");
-    table.button(Icon.trash, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.delete-planet-schematics-tooltip");
+    const downloadConfirm = () => {
+        spprint("confirm 56");
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-planet", () => {
+            spprint("Vars.ui.showConfirm 56");
+            utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
+        });
+    }
+    const deleteConfirm = () => {
+        spprint("confirm 63");
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-planet", () => {
+            spprint("Vars.ui.showConfirm 63");
+            utils.removeSchematicsFromSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
+        });
+    }
+    table.button(Icon.download, downloadConfirm).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.download-planet-schematics-tooltip");
+    table.button(Icon.trash, deleteConfirm).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.delete-planet-schematics-tooltip");
 }
 
 function createCategoriesDialog(planetName, schematicsLoader) {
@@ -60,13 +81,29 @@ function createCategoriesDialog(planetName, schematicsLoader) {
             const schematicsOfCategoryDialog = createScehmaticsDialog(planetName, categories[ii], schematicsLoader);
             schematicsOfCategoryDialog.show();
         }).size(240, 64).pad(5);
-        categoriesDialog.cont.button(Icon.download, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.download-category-schematics-tooltip");
-        categoriesDialog.cont.button(Icon.trash, () => {/* confirm dialog */ }).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.delete-category-schematics-tooltip");
+
+        const downloadConfirm = () => {
+            Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-category", () => {
+                utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
+            });
+        }
+        const deleteConfirm = () => {
+            Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-category", () => {
+                utils.removeSchematicsFromSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
+            });
+        }
+        categoriesDialog.cont.button(Icon.download, downloadConfirm).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.download-category-schematics-tooltip");
+        categoriesDialog.cont.button(Icon.trash, deleteConfirm).size(64, 64).pad(5).tooltip("@scripts.schematics-pack.delete-category-schematics-tooltip");
         categoriesDialog.cont.row();
     }
 
+    const downloadPlanetConfirm = () => {
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-planet", () => {
+            utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
+        });
+    }
     categoriesDialog.addCloseButton();
-    categoriesDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
+    categoriesDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadPlanetConfirm);
     
     return categoriesDialog;
 }
@@ -82,8 +119,13 @@ function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
         buildSchematicButton(schematicsDialog.cont, s);
     }
 
+    const downloadConfirm = () => {
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-category", () => {
+            utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categoryName]));
+        });
+    }
     schematicsDialog.addCloseButton();
-    schematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, () => {/* confirm dialog */ });
+    schematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadConfirm);
     
     return schematicsDialog;
 }
@@ -164,7 +206,13 @@ function createSchematicInfoDialog(schematic) {
     info.buttons.defaults().size(Core.graphics.isPortrait() ? 150 : 210, 64);
     info.buttons.button("@back", Icon.left, () => info.hide());
     info.buttons.button("@editor.export", Icon.upload, () => Vars.ui.schematics.showExport(schematic));
-    info.buttons.button("@scripts.schematics-pack.download", Icon.download, () => { });  // TODO не all может?
+
+    const downloadConfirm = () => {
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-one-schematic", () => {
+            utils.addSchematicsToSave([schematic]);
+        });
+    }
+    info.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadConfirm);  // TODO не all может?
     // info.addCloseButton();
 
     return info;
