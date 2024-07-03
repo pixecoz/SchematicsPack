@@ -6,7 +6,8 @@ module.exports = {
 const constants = require("sp-constants");
 const loadSchematicsDialog = require("sp-load-schematics-dialog");
 const serializer = require("sp-serializer");
-
+const utils = require("sp-utils");
+const spprint = utils.spprint;
 
 function setupInformationDialog() {
     Vars.ui.schematics.buttons.row();

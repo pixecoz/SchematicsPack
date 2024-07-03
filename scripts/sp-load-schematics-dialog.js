@@ -22,7 +22,7 @@ function setupDialog(schematicsLoader) {
 
     const confirm = () => {
         spprint("confirm 24");
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-all", () => {
+        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download", () => {
             spprint("Vars.ui.showConfirm 24")
             utils.addSchematicsToSave(utils.getAllSchematics(schematicsLoader));
         });
@@ -53,16 +53,16 @@ function buildPlanetButtons(table, planetName, schematicsLoader) {
     }).size(210, 64).pad(5);
 
     const downloadConfirm = () => {
-        spprint("confirm 56");
+        // spprint("confirm 56");
         Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-planet", () => {
-            spprint("Vars.ui.showConfirm 56");
+            // spprint("Vars.ui.showConfirm 56");
             utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
     const deleteConfirm = () => {
-        spprint("confirm 63");
+        // spprint("confirm 63");
         Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-planet", () => {
-            spprint("Vars.ui.showConfirm 63");
+            // spprint("Vars.ui.showConfirm 63");
             utils.removeSchematicsFromSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }

@@ -130,10 +130,10 @@ function tilesEqual(schem1, schem2, sort) {
 }
 
 
-function getSchematicsOfCategories(schematicLoader, planet /* PlanetLike[] */, categories /* string[] */) {
+function getSchematicsOfCategories(schematicLoader, planet /* string[] */, categories /* string[] */) {
     let result = [];
     for (let cat of categories) {
-        result = result.concat(schematicLoader.getSchematics(planet /* PlanetLike[] */, categories));
+        result = result.concat(schematicLoader.getSchematics(planet /* string[] */, cat));
     }
     return result;
 }
@@ -142,7 +142,9 @@ function getSchematicsOfPlanets(schematicLoader, planets) {
     let result = [];
     for (let p of planets) {
         const cats = schematicLoader.getCategories(p);
-        result = result.concat(getSchematicsOfCategories(schematicLoader, p, cats));
+        const ofCats = getSchematicsOfCategories(schematicLoader, p, cats);
+        result = result.concat(ofCats);
+        // spprint("get schematics of p="+p, "cats="+cats,"ofCats="+ofCats,"result="+result);
     }
     return result;
 }
