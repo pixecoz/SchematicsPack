@@ -10,7 +10,8 @@ const utils = require("sp-utils");
 const spprint = utils.spprint;
 
 function setupInformationDialog() {
-    Vars.ui.schematics.buttons.row();
+    if (!Core.graphics.isPortrait()) Vars.ui.schematics.buttons.row();
+    
 
     Vars.ui.schematics.buttons.button("@scripts.schematics-pack.information", Icon.info, () => {
         var information = new BaseDialog("@scripts.schematics-pack.information");

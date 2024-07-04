@@ -20,15 +20,8 @@ function setupDialog(schematicsLoader) {
 
     setupPane(planetsAndAddonsSchematicsDialog.cont, schematicsLoader);
 
-    const confirm = () => {
-        spprint("confirm 24");
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download", () => {
-            spprint("Vars.ui.showConfirm 24")
-            utils.addSchematicsToSave(utils.getAllSchematics(schematicsLoader));
-        });
-    }
+
     planetsAndAddonsSchematicsDialog.addCloseButton();
-    planetsAndAddonsSchematicsDialog.buttons.button("@scripts.schematics-pack.download", Icon.download, confirm);
 }
 
 function setupPane(table, schematicsLoader) {
@@ -53,16 +46,14 @@ function buildPlanetButtons(table, planetName, schematicsLoader) {
     }).size(210, 64).pad(5);
 
     const downloadConfirm = () => {
-        // spprint("confirm 56");
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-planet", () => {
-            // spprint("Vars.ui.showConfirm 56");
+        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", localPlanetName), () => {
             utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
     const deleteConfirm = () => {
-        // spprint("confirm 63");
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-planet", () => {
-            // spprint("Vars.ui.showConfirm 63");
+        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.delete-planet", localPlanetName), () => {
             utils.removeSchematicsFromSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
@@ -83,12 +74,20 @@ function createCategoriesDialog(planetName, schematicsLoader) {
         }).size(240, 64).pad(5);
 
         const downloadConfirm = () => {
-            Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-category", () => {
-                utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
-            });
+            const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categories[ii]);
+            const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+            Vars.ui.showConfirm("@confirm", 
+                                Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, localPlanetName), 
+                                () => {
+                    utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
+                });
         }
         const deleteConfirm = () => {
-            Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.delete-category", () => {
+            const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categories[ii]);
+            const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+            Vars.ui.showConfirm("@confirm", 
+                                Core.bundle.format("scripts.schematics-pack.delete-category", localCategoryName, localPlanetName), 
+                                () => {
                 utils.removeSchematicsFromSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
             });
         }
@@ -98,7 +97,8 @@ function createCategoriesDialog(planetName, schematicsLoader) {
     }
 
     const downloadPlanetConfirm = () => {
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-planet", () => {
+        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", localPlanetName), () => {
             utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
@@ -120,7 +120,11 @@ function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
     }
 
     const downloadConfirm = () => {
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-category", () => {
+        const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categoryName);
+        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
+        Vars.ui.showConfirm("@confirm", 
+                            Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, localPlanetName), 
+                            () => {
             utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categoryName]));
         });
     }
@@ -208,12 +212,14 @@ function createSchematicInfoDialog(schematic) {
     info.buttons.button("@editor.export", Icon.upload, () => Vars.ui.schematics.showExport(schematic));
 
     const downloadConfirm = () => {
-        Vars.ui.showConfirm("@confirm", "@scripts.schematics-pack.download-one-schematic", () => {
+        Vars.ui.showConfirm("@confirm", 
+                            Core.bundle.format("scripts.schematics-pack.download-one-schematic", schematic.name()), 
+                            () => {
             utils.addSchematicsToSave([schematic]);
         });
     }
-    info.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadConfirm);  // TODO не all может?
-    // info.addCloseButton();
+    if (!Core.graphics.isPortrait()) info.buttons.row();
+    info.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadConfirm);  
 
     return info;
 }
