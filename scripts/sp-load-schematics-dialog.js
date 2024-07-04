@@ -46,14 +46,12 @@ function buildPlanetButtons(table, planetName, schematicsLoader) {
     }).size(210, 64).pad(5);
 
     const downloadConfirm = () => {
-        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
-        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", localPlanetName), () => {
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", planet.localizedName), () => {
             utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
     const deleteConfirm = () => {
-        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
-        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.delete-planet", localPlanetName), () => {
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.delete-planet", planet.localizedName), () => {
             utils.removeSchematicsFromSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
@@ -64,6 +62,7 @@ function buildPlanetButtons(table, planetName, schematicsLoader) {
 function createCategoriesDialog(planetName, schematicsLoader) {
     let categoriesDialog = new BaseDialog("@scripts.schematics-pack.planet-schematics-dialog");
     const categories = schematicsLoader.getCategories(planetName);
+    const planet = Vars.content.planet(planetName);
 
     for (let i = 0; i < categories.length; i++) {
         // new variable for each lambda closure because it catch i by reference that leads to same i value (=length) for each lambda running
@@ -75,18 +74,16 @@ function createCategoriesDialog(planetName, schematicsLoader) {
 
         const downloadConfirm = () => {
             const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categories[ii]);
-            const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
             Vars.ui.showConfirm("@confirm", 
-                                Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, localPlanetName), 
+                                Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, planet.localizedName), 
                                 () => {
                     utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
                 });
         }
         const deleteConfirm = () => {
             const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categories[ii]);
-            const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
             Vars.ui.showConfirm("@confirm", 
-                                Core.bundle.format("scripts.schematics-pack.delete-category", localCategoryName, localPlanetName), 
+                                Core.bundle.format("scripts.schematics-pack.delete-category", localCategoryName, planet.localizedName), 
                                 () => {
                 utils.removeSchematicsFromSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categories[ii]]));
             });
@@ -97,8 +94,7 @@ function createCategoriesDialog(planetName, schematicsLoader) {
     }
 
     const downloadPlanetConfirm = () => {
-        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
-        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", localPlanetName), () => {
+        Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.download-planet", planet.localizedName), () => {
             utils.addSchematicsToSave(utils.getSchematicsOfPlanets(schematicsLoader, [planetName]));
         });
     }
@@ -112,6 +108,7 @@ function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
     const schematicsDialog = new BaseDialog("@scripts.schematics-pack.schematics-category-" + categoryName);
     // let cols = Math.max(Core.graphics.getWidth() / Scl.scl(230), 1);
     const schematics = schematicsLoader.getSchematics(planetName, categoryName);
+    const planet = Vars.content.planet(planetName);
 
     for (let ss of schematics) {
         // same reason
@@ -121,9 +118,8 @@ function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
 
     const downloadConfirm = () => {
         const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categoryName);
-        const localPlanetName = Core.bundle.get("@scripts.schematics-pack.schematics-planet-" + planetName);
         Vars.ui.showConfirm("@confirm", 
-                            Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, localPlanetName), 
+                            Core.bundle.format("scripts.schematics-pack.download-category", localCategoryName, planet.localizedName), 
                             () => {
             utils.addSchematicsToSave(utils.getSchematicsOfCategories(schematicsLoader, planetName, [categoryName]));
         });
