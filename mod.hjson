@@ -1,17 +1,27 @@
 name: "schematics-pack",
-displayName: "Schematics Pack",
+displayName: "[#7a83ff[]]Schematics Pack[[]]",
 subtitle: "The best way out is always through",
-author: "[#7a83ff[]]pixecoz[[]] & [pink[]]Qwaka[[]]",
-description: "[#f15454[]]⚠ Mod can download schematics directly to your game save. ⚠[[]]
-Even after removing the mod, the schematics will not be deleted. You have been warned!
+author: "[#7a83ff[]]pixecoz[[]] [orange[]]&[[]] [pink[]]Qwaka[[]]",
+description: "[#f15454[]]⚠ Mod can download schematics directly to your game save ⚠[[]]
 
-[#84f491[]]Mod adds:[[]]
-• High quality schematics
-• 3 new maps for schematics
-• Restore schematics function
-Contains schematics for resources, energy, units and more.
+Even after [stat[]]removing[[]] the mod, the schematics [stat[]]will not[[]] be deleted. You have been [stat[]]warned[[]]!
 
-Special thanks to: [teal[]]Alex[[]][pink[]]CnC[[]][red[]]1095[[]], [teal[]]xMrKamil[[]], [orange[]]<[[]]Laim_Ik™[orange[]]>[[]], Goozman_, KirillRum, [gold[]]|[[]][gold[]]Fox1va[[]][gold[]]|[[]], [#f00[]]ilya[#333[]]034[[]][[]], [#83[]]AlphaGamer[[]]",
+[#84f491[]]Mod Adds[[]]
+• [stat[]]High[[]] quality schematics
+• [stat[]]3[[]] new maps for schematics
+• Schematics [stat[]]Recycle bin[[]]
+
+Mod can add schematics for [stat[]]resources[[]], [stat[]]energy[[]], [stat[]]units[[]] and more
+
+[#a387ea[]]Special Thanks[[]]
+[teal[]]Alex[[]][pink[]]CnC[[]][red[]]1095[[]]
+[teal[]]xMrKamil[[]]
+[orange[]]<[[]]Laim_Ik™[orange[]]>[[]]
+Goozman_
+KirillRum
+[gold[]]|[[]][gold[]]Fox1va[[]][gold[]]|[[]]
+[#f00[]]ilya[#333[]]034[[]][[]]
+[#83[]]AlphaGamer[[]]",
 version: 10.0,
 minGameVersion: 146,
 hidden: true
