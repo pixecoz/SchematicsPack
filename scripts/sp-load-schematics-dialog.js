@@ -218,7 +218,7 @@ function createSchematicInfoDialog(schematic) {
             utils.addSchematicsToSave([schematic]);
         });
     }
-    if (!Core.graphics.isPortrait()) info.buttons.row();
+    if (Core.graphics.isPortrait()) info.buttons.row();
     info.buttons.button("@scripts.schematics-pack.download", Icon.download, downloadConfirm);  
 
     return info;
