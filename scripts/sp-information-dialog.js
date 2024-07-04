@@ -52,6 +52,7 @@ function setupInformationDialog() {
             });
 
             if (constants.developer) {
+                if (Core.graphics.isPortrait()) information.buttons.row();
                 information.buttons.button("сделать json", () => {
                     try {
                         const resultJson = serializer.serializeDirectory(constants.dirToSerializeName);
