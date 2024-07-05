@@ -9,4 +9,5 @@ module.exports = {
     
     serializedJsonName: "dev_schematics.json",
     dirToSerializeName: "dev_schematics",
+    serializedDateName: "last_update.txt",
 }

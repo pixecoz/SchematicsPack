@@ -58,6 +58,8 @@ function setupInformationDialog() {
                         const resultJson = serializer.serializeDirectory(constants.dirToSerializeName);
                         const resultFile = new Fi(constants.serializedJsonName);
                         resultFile.writeString(JSON.stringify(resultJson, null, 4));
+
+                        serializer.serializeCurrentDate(new Fi(constants.serializedDateName));
                         
                         Vars.ui.showInfoFade("Success", 2);
                     } catch (e) {

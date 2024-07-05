@@ -129,10 +129,10 @@ function parseSchematicsJson(schematicsJson) {
     };
    
     for (let i = 0; i < schematicsJson.length; i++) {
-        if (schematicsJson[i].type !== "planet") {
-            spprint("skip unknown type in json:", schematicsJson[i].type);
-            continue;
-        }
+        // if (schematicsJson[i].type !== "planet") {
+        //     spprint("skip unknown type in json:", schematicsJson[i].type);
+        //     continue;
+        // }
 
         const planetName = schematicsJson[i].name;
         result.planets.push(new PlanetLike(planetName));

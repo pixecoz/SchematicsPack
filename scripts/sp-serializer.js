@@ -1,5 +1,17 @@
+module.exports = {
+    serializeDirectory: serializeDirectory,
+    serializePlanets: serializePlanets,
+    serializePlanet: serializePlanet,
+    serializePlanetCategories: serializePlanetCategories,
+    serializeCategory: serializeCategory, 
+    serializeCurrentDate: serializeCurrentDate,
+};
 
-function serializeCategory(category) {
+function serializeCurrentDate(fi /* Fi */) {
+    fi.writeString(String(new Date()));
+}
+
+function serializeCategory(category /* Fi */) {
     const result = [];
 
     const schematicFiles = category.list("msch");
@@ -11,7 +23,7 @@ function serializeCategory(category) {
     return result;
 }
 
-function serializePlanetCategories(categories) {
+function serializePlanetCategories(categories /* Fi[] */) {
     const result = {};
 
     for (let cat of categories) {
@@ -23,9 +35,8 @@ function serializePlanetCategories(categories) {
     return result;
 }
 
-function serializePlanet(planet) {
+function serializePlanet(planet /* Fi */) {
     const result = {};
-    result.type = "planet";
     result.name = planet.name();
     
     const categories = planet.list();
@@ -34,7 +45,7 @@ function serializePlanet(planet) {
     return result;
 }
 
-function serializePlanets(planets) {
+function serializePlanets(planets /* Fi[] */) {
     const result = [];
     for (let p of planets) {
         if (!p.isDirectory()) continue;
@@ -44,7 +55,7 @@ function serializePlanets(planets) {
     return result;
 }
 
-function serializeDirectory(dirName) {
+function serializeDirectory(dirName /* String */) {
     const dir = new Fi(dirName);
     
     if (!dir.exists() || !dir.isDirectory()) {
@@ -57,12 +68,5 @@ function serializeDirectory(dirName) {
     return resultJson;
 }
 
-module.exports = {
-    serializeDirectory: serializeDirectory,
-    serializePlanets: serializePlanets,
-    serializePlanet: serializePlanet,
-    serializePlanetCategories: serializePlanetCategories,
-    serializeCategory: serializeCategory, 
-};
 
 
