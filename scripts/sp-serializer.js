@@ -5,10 +5,20 @@ module.exports = {
     serializePlanetCategories: serializePlanetCategories,
     serializeCategory: serializeCategory, 
     serializeCurrentDate: serializeCurrentDate,
+    serializeMeta: serializeMeta,
 };
+
+const utils = require("sp-utils");
 
 function serializeCurrentDate(fi /* Fi */) {
     fi.writeString(String(new Date()));
+}
+
+function serializeMeta(fi /* Fi */, resultString /* string */) {
+    const meta = {
+        hash: utils.strMd5str(resultString),
+    }
+    fi.writeString(JSON.stringify(meta, null, 4));
 }
 
 function serializeCategory(category /* Fi */) {

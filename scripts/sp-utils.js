@@ -9,6 +9,8 @@ module.exports = {
     getAllSchematics: getAllSchematics,
     addSchematicsToSave: addSchematicsToSave,
     removeSchematicsFromSave: removeSchematicsFromSave,
+
+    strMd5str: strMd5str,
 }
 
 function spprint() {
@@ -94,7 +96,7 @@ function configsEqual(conf1, conf2) {
         ((typeof conf2.equals !== "undefined") && conf2.equals(conf1));
 }
 
-function tilesEqual(schem1, schem2, sort) {
+function tilesEqual(schem1 /* Schematic */, schem2 /* Schematic */, sort /* bool */) {
     const tiles1 = schem1.tiles;
     const tiles2 = schem2.tiles;
     const len = tiles1.size;
@@ -138,7 +140,7 @@ function getSchematicsOfCategories(schematicLoader, planet /* string[] */, categ
     return result;
 }
 
-function getSchematicsOfPlanets(schematicLoader, planets) {
+function getSchematicsOfPlanets(schematicLoader, planets /* string[] */) {
     let result = [];
     for (let p of planets) {
         const cats = schematicLoader.getCategories(p);
@@ -153,7 +155,7 @@ function getAllSchematics(schematicLoader) {
     return getSchematicsOfPlanets(schematicLoader, schematicLoader.getPlanets());
 }
 
-function addSchematicsToSave(schematics /* Schematic[] */) {
+function addSchematicsToSave(schematics /* Schematic[] */) {  // -> void
     const all = Vars.schematics.all();		
     all.each(cons(s => s.tiles.sort(floatf(st => st.y * s.width + st.x))));
 
@@ -169,7 +171,7 @@ function addSchematicsToSave(schematics /* Schematic[] */) {
     }
 }
 
-function removeSchematicsFromSave(schematics /* Schematic[] */) {
+function removeSchematicsFromSave(schematics /* Schematic[] */) { // -> void
     const all = Vars.schematics.all();		
     all.each(cons(s => s.tiles.sort(floatf(st => st.y * s.width + st.x))));
 
@@ -188,4 +190,14 @@ function removeSchematicsFromSave(schematics /* Schematic[] */) {
         const s = toRemove.get(i);
         Vars.schematics.remove(s);
     }
+}
+
+function strMd5str(s /* string */) {  // -> string
+    const ss = new java.lang.String(s);
+    const m = java.security.MessageDigest.getInstance("MD5");
+    m.update(ss.getBytes());
+
+    return Array.from(m.digest(), (b) => {
+        return ('0' + (b & 0xFF).toString(16)).slice(-2);
+    }).join('');
 }

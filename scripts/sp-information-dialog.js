@@ -40,8 +40,7 @@ function setupInformationDialog() {
 
             if (Core.graphics.isPortrait()) information.buttons.row();
 
-            information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => 
-            {   
+            information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => {   
                 loadSchematicsDialog.dialog.show();
             });
 
@@ -57,13 +56,15 @@ function setupInformationDialog() {
                     try {
                         const resultJson = serializer.serializeDirectory(constants.dirToSerializeName);
                         const resultFile = new Fi(constants.serializedJsonName);
-                        resultFile.writeString(JSON.stringify(resultJson, null, 4));
+                        const resultString = JSON.stringify(resultJson, null, 4);
+                        resultFile.writeString(resultString);
 
-                        serializer.serializeCurrentDate(new Fi(constants.serializedDateName));
-                        
-                        Vars.ui.showInfoFade("Success", 2);
+                        const metaFile = new Fi(constants.serializedMetaName);
+                        serializer.serializeMeta(metaFile, resultString);
+
+                        Vars.ui.showInfoFade("Success", 3);
                     } catch (e) {
-                        Vars.ui.showInfoFade("Error", 2);
+                        Vars.ui.showInfoFade("Error", 3);
                         spprint("error to make json with schematics: " + e);
                     }
                 });

@@ -1,5 +1,7 @@
 
+const constants = require("sp-constants");
 const utils = require("sp-utils");
+const { stileString } = require("./sp-utils");
 const spprint = utils.spprint;
 
 
@@ -81,26 +83,18 @@ fileSchematicsLoader.init();
 
 const githubSchematicsLoader = {
     init: function() {
-        const urlPrefix = "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev";
-        const schematicJsonPath = "/msch/sch.json";
         this.planets = [];
         this.planetCategories = {};
         this.planetSchematicsByCategory = {};
-
-        Http.get(urlPrefix + schematicJsonPath, (res) => {
-            const stringRes = res.getResultAsString().trim();
-            if (stringRes == "") {
-                spprint("fetched json is empty", res.getStatus(), res);
-                return;
-            }
-            const schematicsJson = JSON.parse(stringRes);
-            const parseResult = parseSchematicsJson(schematicsJson);
-            this.planets = parseResult.planets;
-            this.planetCategories = parseResult.planetCategories;
-            this.planetSchematicsByCategory = parseResult.planetSchematicsByCategory;
-
-            spprint("fetch json with", this.planets.length, "planets");
+        getSchematicsJson((json) => {
+            this.setJson(json);
+            spprint("load json with", this.planets.length, "planets");
         });
+    },
+    setJson: function(json) {
+        this.planets = json.planets;
+        this.planetCategories = json.planetCategories;
+        this.planetSchematicsByCategory = json.planetSchematicsByCategory;
     },
     getPlanets: function() {
         return this.planets;
@@ -158,6 +152,58 @@ function parseSchematicsJson(schematicsJson) {
     return result;
 }
 
+
+function getSchematicsJson(callback) {
+    Http.get(constants.schematicsMetaUrl)
+        .error((e) => {
+            spprint("failed to fetch metadata file: " + e);
+            callback(getLocalJson());
+        })
+        .submit((res) => {
+            const stringRes = res.getResultAsString().trim();
+            const jsonRes = JSON.parse(stringRes);
+            const localHash = utils.strMd5str(getLocalJsonString());
+            if (localHash == jsonRes.hash) {
+                spprint("fetched hash equals local");
+                callback(getLocalJson());
+            } else {
+                spprint(localHash + " != " + jsonRes.hash);
+                Core.app.post(() => {
+                    Http.get(constants.schematicsJsonUrl)
+                    .error((e) => {
+                        spprint("error fetching schematics json: " + e);
+                        callback(getLocalJson());
+                    })
+                    .submit((res) => {
+                        spprint("success fetch schematics json");
+                        const stringRes = res.getResultAsString().trim();
+                        const jsonRes = JSON.parse(stringRes);
+                        const parsedResult = parseSchematicsJson(jsonRes);
+                        saveToLocalJson(stringRes);
+                        callback(parsedResult);
+                    });
+                });
+            }
+        });
+    
+}
+
+function getLocalJson() {
+    const localJsonFile = Vars.dataDirectory.child("sp_schematics.json");
+    const json = JSON.parse(localJsonFile.readString());
+    const parsedResult = parseSchematicsJson(json);
+    return parsedResult;
+}
+
+function getLocalJsonString() {
+    const localJsonFile = Vars.dataDirectory.child("sp_schematics.json");
+    return localJsonFile.readString();
+}
+
+function saveToLocalJson(stringJson /* string */) {
+    const localJsonFile = Vars.dataDirectory.child("sp_schematics.json");
+    localJsonFile.writeString(stringJson);
+}
 
 module.exports = {
     fileSchematicsLoader: fileSchematicsLoader,

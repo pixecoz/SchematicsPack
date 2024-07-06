@@ -28,6 +28,7 @@ function initMod() {
 
     // TODO: put new version on dispose
 
+    copySchematicsJsonIfNotPresented();
     deletedSchematics.init();
 }
 
@@ -49,4 +50,12 @@ function setupUI() {
     }
     infoDialog.setupInformationDialog();
     setupDeletedSchematicsDialog();
+}
+
+function copySchematicsJsonIfNotPresented() {
+    const modJsonFile = Vars.mods.locateMod(constants.modname).root.child("msch/sch.json");
+    const localJsonFile = Vars.dataDirectory.child("sp_schematics.json");
+    if (!localJsonFile.exists()) {
+        localJsonFile.writeString(modJsonFile.readString());
+    }
 }
