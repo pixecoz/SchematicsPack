@@ -9,6 +9,7 @@ module.exports = {
 };
 
 const utils = require("sp-utils");
+const spprint = utils.spprint;
 
 function serializeCurrentDate(fi /* Fi */) {
     fi.writeString(String(new Date()));
@@ -38,7 +39,7 @@ function serializePlanetCategories(categories /* Fi[] */) {
 
     for (let cat of categories) {
         if (!cat.isDirectory()) continue;
-        const categoryArr = serializeCategory(cat);
+        let categoryArr = serializeCategory(cat);
         result[cat.name()] = categoryArr;
     }
 
@@ -52,6 +53,8 @@ function serializePlanet(planet /* Fi */) {
     const categories = planet.list();
     result.categories = serializePlanetCategories(categories);
 
+    // spprint("name=" + result.name, "categories="+JSON.stringify(result.categories));
+
     return result;
 }
 
@@ -59,7 +62,8 @@ function serializePlanets(planets /* Fi[] */) {
     const result = [];
     for (let p of planets) {
         if (!p.isDirectory()) continue;
-        const planetObj = serializePlanet(p);
+        let planetObj = serializePlanet(p);
+        // spprint("add planet obj: " + JSON.stringify(planetObj, null, 4));
         result.push(planetObj);
     }
     return result;
@@ -74,6 +78,8 @@ function serializeDirectory(dirName /* String */) {
     
     const planets = dir.list();
     const resultJson = serializePlanets(planets);
+
+    // spprint("output json is \n" + JSON.stringify(resultJson, null, 4));
 
     return resultJson;
 }
