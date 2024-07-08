@@ -106,15 +106,22 @@ function createCategoriesDialog(planetName, schematicsLoader) {
 
 function createScehmaticsDialog(planetName, categoryName, schematicsLoader) {
     const schematicsDialog = new BaseDialog("@scripts.schematics-pack.schematics-category-" + categoryName);
-    // let cols = Math.max(Core.graphics.getWidth() / Scl.scl(230), 1);
     const schematics = schematicsLoader.getSchematics(planetName, categoryName);
     const planet = Vars.content.planet(planetName);
 
-    for (let ss of schematics) {
-        // same reason
-        let s = ss;
-        buildSchematicButton(schematicsDialog.cont, s);
-    }
+    const cols = Mathf.round(Core.graphics.getWidth() / Scl.scl(300));
+    if (cols < 1) cols = 1;
+
+    schematicsDialog.cont.pane(p => {
+        let i = 0;
+        for (let ss of schematics) {
+            // same reason
+            let s = ss;
+            buildSchematicButton(p, s);
+            if ((i + 1) % cols == 0) p.row();
+            i++;
+        }
+    });
 
     const downloadConfirm = () => {
         const localCategoryName = Core.bundle.get("@scripts.schematics-pack.schematics-category-" + categoryName);
