@@ -11,9 +11,9 @@ function setupStartingDialog() {
 
     startingDialog.buttons.defaults().size(210, 64);
     startingDialog.buttons.button("@ok", () => {
-        startingDialog.hide();
-        
+        startingDialog.hide();        
         deleteOldSchematics();
+        Core.settings.put(constants.settingsKey, new java.lang.Float(constants.version));
     }).size(210, 64);
 
     startingDialog.addCloseListener();

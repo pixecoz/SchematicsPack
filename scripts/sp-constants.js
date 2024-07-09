@@ -1,6 +1,6 @@
 module.exports = {
     // version to determine if mod was updated, not related to version in mod.hjson 
-    version: 1.0625,
+    version: 1.1,
 
     githubURL: "https://github.com/pixecoz/MindustrySchematics/releases",
     discrodURL: "https://discord.gg/P8zbP8xN8D",

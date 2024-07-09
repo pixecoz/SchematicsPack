@@ -12,7 +12,7 @@ const setupDeletedSchematicsDialog = deletedSchematics.setupDeletedSchematicsDia
 
 let prevVersion = -1.0;
 let versionUpgraded = true;
-let firstRunOfVersion1x = true;
+let firstRunOfVersion1x = false;
 
 
 initMod();
@@ -24,23 +24,25 @@ function initMod() {
         setupUI();
     });
 
-    Events.on(DisposeEvent, () => {
-        Core.settings.put(constants.settingsKey, new java.lang.Float(constants.version));
-    });
-
     copySchematicsJsonIfNotPresented();
     deletedSchematics.init();
+
+    // if firstRunOfVersion1x = true, then starting dialog is shown and version updated after click on 'ok' button 
+    if (!firstRunOfVersion1x) {
+        Core.settings.put(constants.settingsKey, new java.lang.Float(constants.version));
+    }
 }
 
 function checkInstalledVersion() {
+    const curVersion = new java.lang.Float(constants.version).floatValue();
     if (Core.settings.has(constants.settingsKey)) {
         prevVersion = Core.settings.getFloat(constants.settingsKey, -1.0);
-        versionUpgraded = prevVersion < constants.version;
-        spprint("Settings contains settingsKey: '" + constants.settingsKey + "', previous version: " + prevVersion + ", current version: " + constants.version + ", version upgraded: " + versionUpgraded);
+        versionUpgraded = prevVersion < curVersion;
+        spprint("Settings contains settingsKey: '" + constants.settingsKey + "', previous version: " + prevVersion + ", current version: " + curVersion + ", version upgraded: " + versionUpgraded);
     } else {
         firstRunOfVersion1x = true;
-        spprint("Settings do not contains settingsKey: '" + constants.settingsKey + "', put current version: " + constants.version);
-        Core.settings.put(constants.settingsKey, new java.lang.Float(constants.version));
+        spprint("Settings do not contains settingsKey: '" + constants.settingsKey + "', put current version: " + curVersion);
+        Core.settings.put(constants.settingsKey, new java.lang.Float(curVersion));
     }
 }
 
