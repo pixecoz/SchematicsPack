@@ -8,6 +8,7 @@ module.exports = {
     serializeMeta: serializeMeta,
 };
 
+const constants = require("sp-constants");
 const utils = require("sp-utils");
 const spprint = utils.spprint;
 
@@ -22,12 +23,20 @@ function serializeMeta(fi /* Fi */, resultString /* string */) {
     fi.writeString(JSON.stringify(meta, null, 4));
 }
 
+function writeTags(s /* Schematic */) {
+    const meta = {
+        modVersion: constants.version,
+    }
+    s.tags.put("schematics-pack-meta", JSON.stringify(meta));
+}
+
 function serializeCategory(category /* Fi */) {
     const result = [];
 
     const schematicFiles = category.list("msch");
     for (let fi of schematicFiles) {
         let s = Vars.schematics.read(fi);
+        writeTags(s);
         result.push(Vars.schematics.writeBase64(s));
     }
 

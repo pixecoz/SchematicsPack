@@ -164,7 +164,7 @@ function getSchematicsJson(callback) {
             const jsonRes = JSON.parse(stringRes);
             const localHash = utils.strMd5str(getLocalJsonString());
             if (localHash == jsonRes.hash) {
-                spprint("fetched hash equals local");
+                spprint("fetched hash (" + jsonRes.hash + ") equals local (" + localHash + ")");
                 callback(getLocalJson());
             } else {
                 spprint(localHash + " != " + jsonRes.hash);
