@@ -35,8 +35,8 @@ function init() {
     });
 }
 
-function setupDeletedSchematicsDialog() {
-    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.deleted-schematics", Icon.trash, () => {
+function setupDeletedSchematicsDialog(table) {
+    table.button("@scripts.schematics-pack.deleted-schematics", Icon.trash, () => {
         updateDeletedSchematics()
 
         var deletedDialog = new BaseDialog("@scripts.schematics-pack.deleted-schematics-dialog");

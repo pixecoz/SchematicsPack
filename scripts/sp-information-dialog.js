@@ -1,5 +1,6 @@
 module.exports = {
     setupInformationDialog: setupInformationDialog,
+    dialog: null
 }
 
 
@@ -9,12 +10,17 @@ const serializer = require("sp-serializer");
 const utils = require("sp-utils");
 const spprint = utils.spprint;
 
+const deletedSchematics = require("sp-deleted-schematics-dialog");
+const setupDeletedSchematicsDialog = deletedSchematics.setupDeletedSchematicsDialog;
+
 function setupInformationDialog() {
     if (Core.graphics.isPortrait()) Vars.ui.schematics.buttons.row();
     
 
-    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.information", Icon.info, () => {
-        var information = new BaseDialog("@scripts.schematics-pack.information");
+    Vars.ui.schematics.buttons.button("", Icon.info, () => {
+        let information = new BaseDialog("@scripts.schematics-pack.information");
+        module.exports.dialog = information;
+        spprint("set dialog")
 
         const builder = run(() => {
             information.cont.clear();
@@ -82,5 +88,7 @@ function setupInformationDialog() {
                 information.updateScrollFocus();
             }
         });
-    });
+
+        setupDeletedSchematicsDialog(information.buttons);
+    }).width(50);
 }

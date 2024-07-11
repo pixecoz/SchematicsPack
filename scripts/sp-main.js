@@ -51,7 +51,7 @@ function setupUI() {
         startDialog.setupStartingDialog();
     }
     infoDialog.setupInformationDialog();
-    setupDeletedSchematicsDialog();
+    // setupDeletedSchematicsDialog(infoDialog.dialog.buttons);
 }
 
 function copySchematicsJsonIfNotPresented() {
