@@ -14,9 +14,6 @@ const deletedSchematics = require("sp-deleted-schematics-dialog");
 const setupDeletedSchematicsDialog = deletedSchematics.setupDeletedSchematicsDialog;
 
 function setupInformationDialog() {
-    if (Core.graphics.isPortrait()) Vars.ui.schematics.buttons.row();
-    
-
     Vars.ui.schematics.buttons.button(new TextureRegionDrawable(Core.atlas.find(constants.modname + "-sp-button-icon")), () => {
         let information = new BaseDialog("@scripts.schematics-pack.information");
         module.exports.dialog = information;
