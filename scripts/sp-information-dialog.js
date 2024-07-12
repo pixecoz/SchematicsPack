@@ -20,7 +20,6 @@ function setupInformationDialog() {
     Vars.ui.schematics.buttons.button(new TextureRegionDrawable(Core.atlas.find(constants.modname + "-sp-button-icon")), () => {
         let information = new BaseDialog("@scripts.schematics-pack.information");
         module.exports.dialog = information;
-        spprint("set dialog")
 
         const builder = run(() => {
             information.cont.clear();
@@ -76,6 +75,7 @@ function setupInformationDialog() {
                 });
             }
 
+            setupDeletedSchematicsDialog(information.buttons);
             information.show();
         });
 
@@ -89,6 +89,5 @@ function setupInformationDialog() {
             }
         });
 
-        setupDeletedSchematicsDialog(information.buttons);
     }).width(64);
 }
