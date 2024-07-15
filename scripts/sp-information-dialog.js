@@ -34,15 +34,24 @@ function setupInformationDialog() {
             //information.cont.labelWrap("@scripts.schematics-pack.mod-information").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
             information.addCloseButton();
 
-            information.buttons.button("@scripts.schematics-pack.discord", Icon.discord, () => {
+            const discordButton = information.buttons.button("@scripts.schematics-pack.discord", Icon.discord, () => {
                 if (!Core.app.openURI(constants.discrodURL)) {
                     Vars.ui.showErrorMessage("@linkfail");
                 }
-            });
+            }).get();
+            Core.atlas.find(constants.modname + "-button").splits =
+                Core.atlas.find(constants.modname + "-button-down").splits =
+                Core.atlas.find(constants.modname + "-button-over").splits = Core.atlas.find("flat-down-base").splits;
+
+            const styleCopy = new TextButton.TextButtonStyle(discordButton.getStyle());
+            styleCopy.up = Core.atlas.drawable(constants.modname + "-button");
+            styleCopy.down = Core.atlas.drawable(constants.modname + "-button-down");
+            styleCopy.over = Core.atlas.drawable(constants.modname + "-button-over");
+            discordButton.setStyle(styleCopy);
 
             if (Core.graphics.isPortrait()) information.buttons.row();
 
-            information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => {   
+            information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => {
                 loadSchematicsDialog.dialog.show();
             });
 
