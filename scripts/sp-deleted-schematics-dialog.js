@@ -50,7 +50,7 @@ function setupDeletedSchematicsDialog(table) {
             deletedSchematics.clear();
             if (rebuildPane[0] != null) rebuildPane[0].run();
 
-        })));
+        }))).disabled(boolf(t => deletedSchematics.size == 0));
 
         const rebuildPane = [null];
         deletedDialog.cont.pane(p => {
