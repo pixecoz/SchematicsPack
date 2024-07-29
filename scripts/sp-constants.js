@@ -7,7 +7,6 @@ module.exports = {
     settingsKey: "scheme-pack-v",
     modname: "schematics-pack",
     logoSpriteName: "schematics-pack",
-    developer: true,
     deletedSchematicsDirName: "deleted_schematics",
     schematicsJsonUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/sch.json",
     schematicsMetaUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/meta.json",

@@ -61,7 +61,8 @@ function setupInformationDialog() {
                 }
             });
 
-            if (constants.developer) {
+            const dirToSerialize = new Fi(constants.dirToSerializeName);
+            if (dirToSerialize.exists() && dirToSerialize.isDirectory()) {
                 if (Core.graphics.isPortrait()) information.buttons.row();
                 information.buttons.button("сделать json", () => {
                     try {
