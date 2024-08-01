@@ -7,6 +7,7 @@ module.exports = {
 const constants = require("sp-constants");
 const loadSchematicsDialog = require("sp-load-schematics-dialog");
 const serializer = require("sp-serializer");
+const linksDialog = require("sp-links-dialog");
 const utils = require("sp-utils");
 const spprint = utils.spprint;
 
@@ -34,32 +35,54 @@ function setupInformationDialog() {
             //information.cont.labelWrap("@scripts.schematics-pack.mod-information").width(Core.graphics.isPortrait() ? 400 : 700).align(Align.center);
             information.addCloseButton();
 
-            const discordButton = information.buttons.button("@scripts.schematics-pack.discord", Icon.discord, () => {
-                if (!Core.app.openURI(constants.discrodURL)) {
-                    Vars.ui.showErrorMessage("@linkfail");
-                }
-            }).get();
-            Core.atlas.find(constants.modname + "-button").splits =
-                Core.atlas.find(constants.modname + "-button-down").splits =
-                Core.atlas.find(constants.modname + "-button-over").splits = Core.atlas.find("flat-down-base").splits;
-
-            const styleCopy = new TextButton.TextButtonStyle(discordButton.getStyle());
-            styleCopy.up = Core.atlas.drawable(constants.modname + "-button");
-            styleCopy.down = Core.atlas.drawable(constants.modname + "-button-down");
-            styleCopy.over = Core.atlas.drawable(constants.modname + "-button-over");
-            discordButton.setStyle(styleCopy);
-
-            if (Core.graphics.isPortrait()) information.buttons.row();
-
             information.buttons.button("@scripts.schematics-pack.load-schematics", Icon.download, () => {
                 loadSchematicsDialog.dialog.show();
             });
 
-            information.buttons.button("@scripts.schematics-pack.github-releases", Icon.github, () => {
-                if (!Core.app.openURI(constants.githubURL)) {
-                    Vars.ui.showErrorMessage("@linkfail");
-                }
+            information.buttons.button("@scripts.schematics-pack.links", Icon.download, () => {
+                const dialog = linksDialog.getLinksDialog();
+                dialog.show();
             });
+
+          
+            if (Core.graphics.isPortrait()) information.buttons.row();
+
+     
+
+            // let shown = false;
+            // information.buttons.table(cons(t => {
+            //     t.button("ssilki", Icon.downOpen, () => {
+            //         shown = !shown;
+            //     }).checked(b => {
+            //         const image = b.getCells().first().get();
+            //         image.setDrawable(shown ? Icon.upOpen : Icon.downOpen);
+            //         return shown;
+            //     }).growX();
+            //     t.row();
+            //     t.collapser(cons(t => {
+            //         t.pane(cons(p => {
+            //             const con = p.table().growX().get();
+            //             con.button("haha", Icon.download, () => {
+            //                 spprint("lol");
+            //             });
+            //             con.row();
+            //             con.button("haha", Icon.download, () => {
+            //                 spprint("lol");
+            //             });
+            //             con.row();
+            //             con.button("haha", Icon.download, () => {
+            //                 spprint("lol");
+            //             });
+            //             con.row();
+            //             con.button("haha", Icon.download, () => {
+            //                 spprint("lol");
+            //             });
+            //             con.row();
+            //         })).scrollX(false);
+            //     }), false, boolp(() => shown)).growX();        
+            // })).size(240, 64).pad(0);
+
+
 
             const dirToSerialize = new Fi(constants.dirToSerializeName);
             if (dirToSerialize.exists() && dirToSerialize.isDirectory()) {
