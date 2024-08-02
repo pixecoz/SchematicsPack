@@ -39,16 +39,6 @@ function setupInformationDialog() {
                 loadSchematicsDialog.dialog.show();
             });
 
-            information.buttons.button("@scripts.schematics-pack.links", Icon.download, () => {
-                const dialog = linksDialog.getLinksDialog();
-                dialog.show();
-            });
-
-          
-            if (Core.graphics.isPortrait()) information.buttons.row();
-
-     
-
             // let shown = false;
             // information.buttons.table(cons(t => {
             //     t.button("ssilki", Icon.downOpen, () => {
@@ -82,8 +72,6 @@ function setupInformationDialog() {
             //     }), false, boolp(() => shown)).growX();        
             // })).size(240, 64).pad(0);
 
-
-
             const dirToSerialize = new Fi(constants.dirToSerializeName);
             if (dirToSerialize.exists() && dirToSerialize.isDirectory()) {
                 if (Core.graphics.isPortrait()) information.buttons.row();
@@ -106,6 +94,14 @@ function setupInformationDialog() {
             }
 
             setupDeletedSchematicsDialog(information.buttons);
+
+            if (Core.graphics.isPortrait()) information.buttons.row();
+
+            information.buttons.button("@scripts.schematics-pack.links", Icon.info, () => {
+                const dialog = linksDialog.getLinksDialog();
+                dialog.show();
+            });
+
             information.show();
         });
 
