@@ -52,6 +52,10 @@ function setupDeletedSchematicsDialog(table) {
 
         }))).disabled(boolf(t => deletedSchematics.size == 0));
 
+        deletedDialog.buttons.button("@scripts.schematics-pack.open-schematics-directory", Icon.link, () => {
+            Core.app.openFolder(delSchemDir.absolutePath());
+        });
+
         const rebuildPane = [null];
         deletedDialog.cont.pane(p => {
 

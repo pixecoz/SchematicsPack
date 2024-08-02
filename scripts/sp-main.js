@@ -52,6 +52,8 @@ function setupUI() {
     }
     infoDialog.setupInformationDialog();
     // setupDeletedSchematicsDialog(infoDialog.dialog.buttons);
+    Vars.ui.schematics.buttons.row();
+    setupOpenSchematicsDirectoryButton();
 }
 
 function copySchematicsJsonIfNotPresented() {
@@ -60,4 +62,11 @@ function copySchematicsJsonIfNotPresented() {
     if (!localJsonFile.exists()) {
         localJsonFile.writeString(modJsonFile.readString());
     }
+}
+
+
+function setupOpenSchematicsDirectoryButton() {
+    Vars.ui.schematics.buttons.button("@scripts.schematics-pack.open-schematics-directory", Icon.link, () => {
+        Core.app.openFolder(Vars.schematicDirectory.absolutePath());
+    });
 }
