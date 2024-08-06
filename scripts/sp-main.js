@@ -9,6 +9,8 @@ const startDialog = require("sp-starting-dialog");
 const deletedSchematics = require("sp-deleted-schematics-dialog");
 const setupDeletedSchematicsDialog = deletedSchematics.setupDeletedSchematicsDialog;
 
+const schematicDescription = require("sp-schem-description");
+
 
 let prevVersion = -1.0;
 let versionUpgraded = true;
@@ -54,6 +56,7 @@ function setupUI() {
     // setupDeletedSchematicsDialog(infoDialog.dialog.buttons);
     Vars.ui.schematics.buttons.row();
     setupOpenSchematicsDirectoryButton();
+    schematicDescription.overrideSchematicButtons();
 }
 
 function copySchematicsJsonIfNotPresented() {
