@@ -24,28 +24,20 @@ function overrideSchematicButtons() {
         infoDialog.buttons.button("@edit", Icon.edit, run(() => showEdit(currentSchematic)));
     }));   
 
-    spprint("info dialog:", infoDialog);
     Vars.ui.schematics.shown(run(() => {
-        spprint("Vars.ui.schematics.cont:", Vars.ui.schematics.cont);
         const scrollPane = Vars.ui.schematics.cont.getCells().get(2).get();
-        spprint("scrollPane:", scrollPane);
-        let buttonsCells = scrollPane.getWidget().getCells();
+        const buttonsCells = scrollPane.getWidget().getCells();
+
+        if (buttonsCells.size == 1 && (buttonsCells.get(0).get() instanceof Label)) {
+            // player has no shcematics
+            return;
+        }
 
         for (let i = 0; i < buttonsCells.size; i++) {
             let schematicButton = buttonsCells.get(i).get();
             let cells = schematicButton.getCells();
             let buttonsOverSchematic = cells.get(0).get();
-
-            // spprint(schematicButton);
-            
-            // cells = buttonsOverSchematic.getCells();
-            // for (let i = 0; i < cells.size; i++) {
-            //     let elem = cells.get(i).get()
-            //     print("elem " + i + ": " + elem.getClass())
-            // }
-
-            const schematic = getSchematicFromSchematicImage(schematicButton.getCells().get(1).get().getChildren().get(0));
-            
+            let schematic = getSchematicFromSchematicImage(schematicButton.getCells().get(1).get().getChildren().get(0));
             buildButtonsOverShematic(buttonsOverSchematic, schematic);
         }
     }))
