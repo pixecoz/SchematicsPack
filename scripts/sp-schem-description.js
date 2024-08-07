@@ -24,8 +24,11 @@ function overrideSchematicButtons() {
         infoDialog.buttons.button("@edit", Icon.edit, run(() => showEdit(currentSchematic)));
     }));   
 
+    spprint("info dialog:", infoDialog);
     Vars.ui.schematics.shown(run(() => {
+        spprint("Vars.ui.schematics.cont:", Vars.ui.schematics.cont);
         const scrollPane = Vars.ui.schematics.cont.getCells().get(2).get();
+        spprint("scrollPane:", scrollPane);
         let buttonsCells = scrollPane.getWidget().getCells();
 
         for (let i = 0; i < buttonsCells.size; i++) {
