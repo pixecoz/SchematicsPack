@@ -5,6 +5,15 @@ const { spprint } = require("sp-utils");
 
 let currentSchematic = null;
 
+
+function rebuildPane() {
+    const rebuildPaneRunnableField = Vars.ui.schematics.getClass().getDeclaredField("rebuildPane");
+    rebuildPaneRunnableField.setAccessible(true);
+    const rebuildPaneRunnable = rebuildPaneRunnableField.get(Vars.ui.schematics);
+    rebuildPaneRunnable.run();
+    overrideButtonsOverSchematic();
+}
+
 function overrideSchematicButtons() {
     const infoField = Vars.ui.schematics.getClass().getDeclaredField("info");
     infoField.setAccessible(true);
@@ -12,7 +21,7 @@ function overrideSchematicButtons() {
     
 
     infoDialog.shown(run(() => {
-        // SchematicsDialog.SchematicImage
+        /* SchematicsDialog.SchematicImage */
         const schematicImage = infoDialog.cont.getCells().get(2).get();
         currentSchematic = getSchematicFromSchematicImage(schematicImage);
         
@@ -24,23 +33,25 @@ function overrideSchematicButtons() {
         infoDialog.buttons.button("@edit", Icon.edit, run(() => showEdit(currentSchematic)));
     }));   
 
-    Vars.ui.schematics.shown(run(() => {
-        const scrollPane = Vars.ui.schematics.cont.getCells().get(2).get();
-        const buttonsCells = scrollPane.getWidget().getCells();
+    Vars.ui.schematics.shown(run(overrideButtonsOverSchematic))
+}
 
-        if (buttonsCells.size == 1 && (buttonsCells.get(0).get() instanceof Label)) {
-            // player has no shcematics
-            return;
-        }
+function overrideButtonsOverSchematic() {
+    const scrollPane = Vars.ui.schematics.cont.getCells().get(2).get();
+    const buttonsCells = scrollPane.getWidget().getCells();
 
-        for (let i = 0; i < buttonsCells.size; i++) {
-            let schematicButton = buttonsCells.get(i).get();
-            let cells = schematicButton.getCells();
-            let buttonsOverSchematic = cells.get(0).get();
-            let schematic = getSchematicFromSchematicImage(schematicButton.getCells().get(1).get().getChildren().get(0));
-            buildButtonsOverShematic(buttonsOverSchematic, schematic);
-        }
-    }))
+    if (buttonsCells.size == 1 && (buttonsCells.get(0).get() instanceof Label)) {
+        // player has no schematics
+        return;
+    }
+
+    for (let i = 0; i < buttonsCells.size; i++) {
+        let schematicButton = buttonsCells.get(i).get();
+        let cells = schematicButton.getCells();
+        let buttonsOverSchematic = cells.get(0).get();
+        let schematic = getSchematicFromSchematicImage(schematicButton.getCells().get(1).get().getChildren().get(0));
+        buildButtonsOverShematic(buttonsOverSchematic, schematic);
+    }
 }
 
 function getSchematicFromSchematicImage(schematicImage) {
@@ -71,7 +82,7 @@ function buildButtonsOverShematic(buttons /* Table */, s /* Schematic */) {
             }else{
                 Vars.ui.showConfirm("@confirm", "@schematic.delete.confirm", () => { 
                     Vars.schematics.remove(s);
-                    // rebuildPane.run(); TODO
+                    rebuildPane();
                 });
             }
         }).tooltip("@save.delete");
@@ -97,15 +108,20 @@ function showEdit(schem /* Schematic */) {
     dialog.cont.row();
 
     dialog.cont.margin(30).add("@editor.description").padRight(6);
-    const descFieldCell = dialog.cont.area(schem.description(), Styles.areaField, cons(t => {})).left().growX().growY();
-    const descField = descFieldCell.get();
+    let descField = null;
+    dialog.cont.pane(cons(p => {
+        const descFieldCell = p.area(schem.description(), Styles.areaField, cons(str => {
+            descField.setPrefRows(descField.getLines());
+        })).left().growX().growY();
+        descField = descFieldCell.get();
+    })).left().growX().growY();
 
     const accept = run(() => {
         schem.tags.put("name", nameField.getText());
         schem.tags.put("description", descField.getText());
         schem.save();
         dialog.hide();
-        // rebuildPane.run(); TODO
+        rebuildPane();
     });
 
     dialog.buttons.defaults().size(210, 64).pad(4);
@@ -113,7 +129,7 @@ function showEdit(schem /* Schematic */) {
     dialog.buttons.button("@cancel", Icon.cancel, run(() => dialog.hide()));
 
     dialog.keyDown(KeyCode.enter, run(() => {
-        if(!nameField.getText().isEmpty() && Core.scene.getKeyboardFocus() != descField){
+        if(!nameField.getText().length == 0 && Core.scene.getKeyboardFocus() != descField){
             accept.run();
         }
     }));

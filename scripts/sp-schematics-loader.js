@@ -115,7 +115,7 @@ githubSchematicsLoader.init();
 
 
 
-function parseSchematicsJson(schematicsJson) {
+function parseSchematicsJson(schematicsJson /* json object */) {
     const result = {
         planets: [],
         planetCategories: {},
@@ -142,7 +142,7 @@ function parseSchematicsJson(schematicsJson) {
                     schematics.push(Schematics.readBase64(base64));
                     // spprint("load:", base64, "for:", planetName, categoryName);
                 } catch (e) {
-                    spprint("Unable read schematic from:", base64.substring(0, 10) + "...", "error:", e);
+                    spprint("Unable read schematic from:", base64.substring(0, 30) + "...", "error:", e);
                 }
             }
             result.planetSchematicsByCategory[planetName][categoryName] = schematics;
