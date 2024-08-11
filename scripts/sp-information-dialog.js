@@ -92,10 +92,11 @@ function setupInformationDialog() {
                     }
                 });
             }
+            
+            if (Core.graphics.isPortrait()) information.buttons.row();
 
             setupDeletedSchematicsDialog(information.buttons);
 
-            if (Core.graphics.isPortrait()) information.buttons.row();
 
             information.buttons.button("@scripts.schematics-pack.links", Icon.info, () => {
                 const dialog = linksDialog.getLinksDialog();
