@@ -8,10 +8,10 @@ module.exports = {
     modname: "schematics-pack",
     logoSpriteName: "schematics-pack",
     deletedSchematicsDirName: "deleted_schematics",
-    schematicsJsonUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/sch.json",
-    schematicsMetaUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/meta.json",
+    schematicsJsonUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/schematics.json",
+    schematicsMetaUrl: "https://raw.githubusercontent.com/pixecoz/SchematicsPack/dev/msch/schematics_meta.json",
     
-    serializedJsonName: "dev_schematics.json",
+    serializedJsonName: "schematics.json",
     dirToSerializeName: "dev_schematics",
     serializedMetaName: "schematics_meta.json",
 }
