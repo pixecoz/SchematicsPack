@@ -52,10 +52,11 @@ function setupUI() {
     if (firstRunOfVersion1x) {
         startDialog.setupStartingDialog();
     }
+    if (!Vars.mobile) {
+        setupOpenSchematicsDirectoryButton();
+    }
     infoDialog.setupInformationDialog();
     // setupDeletedSchematicsDialog(infoDialog.dialog.buttons);
-    Vars.ui.schematics.buttons.row();
-    setupOpenSchematicsDirectoryButton();
     schematicDescription.overrideSchematicButtons();
 }
 
