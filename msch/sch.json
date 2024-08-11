@@ -213,10 +213,6 @@
     },
     {
         "name": "ThisIsAPlanet",
-        "categories": {
-            "ThisIsAFolder": [
-                "bXNjaAF4nGNgZGBkYWDJS8xNZeANycgs9ix2DMovLUktYhApTs5IzU0syUwu1i1ITM7WzU0tSWQQqlbKzU8JSy0qzszPU7Iy1DOsZeBOSS1OLsosKAEKMTAwsOUkJqXmFDMwRccyMrAVQUxjYGBkgAAAnCEfcA=="
-            ]
-        }
+        "categories": {}
     }
 ]
