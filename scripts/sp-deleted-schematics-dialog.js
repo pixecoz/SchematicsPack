@@ -108,7 +108,7 @@ function setupDeletedSchematicsDialog(table) {
                                 })).size(150, 30);
 
 
-                                t.button(Icon.trash, Styles.squareTogglei, () => Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.schematics-delete-confirm", schem.name()), () => {
+                                t.button(Icon.trash, Styles.emptyi, () => Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.schematics-delete-confirm", schem.name()), () => {
                                     deletedSchematics.remove(schem);
                                     rememberSchematics.remove(schem);
                                     schem.file.delete();
@@ -122,23 +122,28 @@ function setupDeletedSchematicsDialog(table) {
                                 t.center();
                                 try {
                                     Vars.schematics.getBuffer(schem);
-                                    t.add(new SchematicsDialog.SchematicImage(schem)).margin(1).size(140);
+                                    t.add(new SchematicsDialog.SchematicImage(schem).setScaling(Scaling.fit)).margin(1).size(140).maxWidth(Scl.scl(192));
                                 } catch (e) {
                                     spprint(e);
                                     t.image(Core.atlas.find("error"));
                                 }
                             }));
 
-                        }), () => Vars.ui.showConfirm("@confirm", Core.bundle.format("scripts.schematics-pack.schematics-restore-confirm", schem.name()), () => {
-                            deletedSchematics.remove(schem);
-                            // spprint("rememberSchematics schem " + schem.name() + " " + rememberSchematics.contains(schem))
-                            if (!rememberSchematics.contains(schem)) rememberSchematics.add(schem);
-                            schem.file.delete();
+                        }), () => {
+                            // if (sel[0].childrenPressed()) return;
 
-                            Vars.schematics.add(schem);
-                            rebuildPane[0].run();
+                            Vars.ui.showConfirm("@confirm", 
+                                                Core.bundle.format("scripts.schematics-pack.schematics-restore-confirm", schem.name()), 
+                                                () => {
+                                deletedSchematics.remove(schem);
+                                // spprint("rememberSchematics schem " + schem.name() + " " + rememberSchematics.contains(schem))
+                                if (!rememberSchematics.contains(schem)) rememberSchematics.add(schem);
+                                schem.file.delete();
 
-                        })).pad(4).size(200, 200).style(Styles.defaulti);
+                                Vars.schematics.add(schem);
+                                rebuildPane[0].run();
+                            });
+                        }).pad(4).size(200, 200).style(Styles.defaulti);
 
                         // sel[0].image(new TextureRegion(Vars.schematics.getPreview(schem)));
 
